@@ -167,6 +167,7 @@ func.skip = async function (hre: HardhatRuntimeEnvironment) {
     if( (hre.network.name == 'hardhat' && !isForking)
        || (hre.network.name == 'localhost' && !isForking) 
        || (hre.network.name == 'bscmainnet' && !isForking)
+       || (hre.network.name == 'mainnet' && !isForking)
        || (hre.network.name == 'bsctestnet') ){
           return true;
       } else{

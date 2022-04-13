@@ -48,7 +48,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     routerAddress = (await get('RouterUniswap')).address;
 
 
-    let lpSupply: BigNumber = await read( 'pairWethDai', 'totalSupply', )
+    let lpSupply: BigNumber = await read( 'pairWethDai', 'totalSupply')
 
     let needUpdated = lpSupply.eq(BigNumber.from('0'));
 
@@ -157,6 +157,8 @@ func.skip = async function (hre: HardhatRuntimeEnvironment) {
     if( (hre.network.name == 'hardhat' && isForking)
        || (hre.network.name == 'localhost' && isForking) 
        || (hre.network.name == 'bscmainnet' && !isForking)
+       || (hre.network.name == 'mainnet' && !isForking)
+
        ){
           return true;
       } else{

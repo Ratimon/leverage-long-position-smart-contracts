@@ -119,5 +119,5 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   
 };
 export default func;
-func.tags = ["2-1-01", "2-1" ,"dai-wrapper","oracle"];
-func.dependencies = ["2-0"]
+func.tags = ["1-1-01", "1-1" ,"dai-wrapper","oracle"];
+func.dependencies = ["1-0"]

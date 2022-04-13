@@ -55,8 +55,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
             wethAddress,
             daiAddress
         )
-
-        if(daiAddress == '0x0000000000000000000000000000000000000000' ) {
+        if(pairAddress == '0x0000000000000000000000000000000000000000' ) {
             await execute(
                 'FactoryUniswap',
                 {from: deployer, log: true}, 
@@ -71,6 +70,8 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
             daiAddress
         )
 
+        console.log('pairAddress', pairAddress)
+
         const pairSubmission : DeploymentSubmission = {
             abi: pairabi,
             address: pairAddress
@@ -79,10 +80,10 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     
         await save('pairWethDai', pairSubmission);
 
-        let esistingPair = await getOrNull('pairWethDai');
+        let existingPair = await getOrNull('pairWethDai');
 
-        if(esistingPair) {
-            log(`Deployment Saved: pairWethDai with address ${chalk.green(esistingPair.address)}`);
+        if(existingPair) {
+            log(`Deployment Saved: pairWethDai with address ${chalk.green(existingPair.address)}`);
         }
 
         const isForking = process.env.HARDHAT_FORK == undefined ? false: true

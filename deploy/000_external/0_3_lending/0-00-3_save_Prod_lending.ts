@@ -9,6 +9,7 @@ import {
 } from 'hardhat-deploy/types';
 
 import comptrollerabi from "../../../src/abis/external/comptroller.json";
+import cetherabi from "../../../src/abis/external/cether.json";
 import ctokenabi from "../../../src/abis/external/ctoken.json";
 
 
@@ -30,7 +31,8 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const {
       deployer,
       comptroller,
-      cdai
+      cether,
+      cdai,
     } = await getNamedAccounts();
 
     log(chalk.cyan(`.....`));
@@ -55,16 +57,28 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
       log(`Deployment Saved: ComptrollerCompound with address ${chalk.green(existingComptrollerCompound.address)}`);
     }
 
+    const cEtherSubmission : DeploymentSubmission = {
+      abi: cetherabi,
+      address: cether
+    }
+
+    await save('CEtherCompound', cEtherSubmission);
+    let existingCEtherCompound = await getOrNull('CEtherCompound');
+
+    if(existingCEtherCompound) {
+      log(`Deployment Saved: CEtherCompound with address ${chalk.green(existingCEtherCompound.address)}`);
+    }
+
     const cDaiSubmission : DeploymentSubmission = {
       abi: ctokenabi,
       address: cdai
     }
 
     await save('CDaiCompound', cDaiSubmission);
-    let existingCEtherCompound = await getOrNull('CDaiCompound');
+    let existingCDaiCompound = await getOrNull('CDaiCompound');
 
-    if(existingCEtherCompound) {
-      log(`Deployment Saved: CDaiCompound with address ${chalk.green(existingCEtherCompound.address)}`);
+    if(existingCDaiCompound) {
+      log(`Deployment Saved: CDaiCompound with address ${chalk.green(existingCDaiCompound.address)}`);
     }
 
 

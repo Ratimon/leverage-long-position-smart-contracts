@@ -99,8 +99,8 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   
 };
 export default func;
-func.tags = ["2-0-02", "2-0", 'bnb-mock-oracle','oracle'];
-func.dependencies = ["2-0-01"];
+func.tags = ["1-0-02", "1-0", 'eth-mock-oracle','oracle'];
+func.dependencies = ["1-0-01"];
 
 
 func.skip = async function (hre: HardhatRuntimeEnvironment) {
