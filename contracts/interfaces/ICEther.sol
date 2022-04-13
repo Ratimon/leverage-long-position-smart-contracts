@@ -20,5 +20,7 @@ interface ICEther {
 
     function balanceOf(address owner) external view returns (uint256);
 
-    // function balanceOfUnderlying(address account) external returns (uint256);
+    function balanceOfUnderlying(address account) external returns (uint256);
+
+    function exchangeRateCurrent() external returns (uint256);
 }

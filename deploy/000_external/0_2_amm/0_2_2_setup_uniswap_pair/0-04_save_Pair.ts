@@ -70,8 +70,6 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
             daiAddress
         )
 
-        console.log('pairAddress', pairAddress)
-
         const pairSubmission : DeploymentSubmission = {
             abi: pairabi,
             address: pairAddress

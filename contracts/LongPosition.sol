@@ -1,12 +1,15 @@
 // SPDX-License-Identifier: MIT
 pragma solidity =0.8.13;
 
+import "hardhat/console.sol";
+
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 import {IWETH9} from "./interfaces/IWETH9.sol";
 import {IComptroller} from "./interfaces/IComptroller.sol";
 import {ICEther} from "./interfaces/ICEther.sol";
 import {ICToken} from "./interfaces/ICToken.sol";
+import {IUniswapV2Router} from "./interfaces/IUniswapV2Router.sol";
 
 import {IOracle, OracleRef, Decimal} from "./refs/OracleRef.sol";
 
@@ -22,8 +25,10 @@ contract LongPosition is OracleRef {
     error CompoundLending_cTokenRepayborrow();
 
     IWETH9 immutable WETH;
+    IUniswapV2Router immutable router;
     uint256 public immutable BASIS_POINTS_GRANULARITY = 10_000;
     uint256 public immutable leverage = 3_000;
+    uint256 private immutable MAX = ~uint256(0);
 
     IOracle public collateralizationOracle;
 
@@ -31,6 +36,8 @@ contract LongPosition is OracleRef {
 
     ICEther public cTokenToSupply;
     ICToken public cTokenToBorrow;
+
+    // IERC20 public tokenToBorrow;
 
     constructor(
         address _oracle,
@@ -41,15 +48,19 @@ contract LongPosition is OracleRef {
         address _cTokenToSupply,
         address _cTokenToBorrow
     )
+        // address _tokenToBorrow
         // uint256 _leverage
         OracleRef(_oracle, _backupOracle, 0, _isInvert)
     {
         collateralizationOracle = IOracle(_collateralizationOracle);
         comptroller = IComptroller(_comptroller);
         WETH = IWETH9(0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2);
+        router = IUniswapV2Router(0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D);
         cTokenToSupply = ICEther(_cTokenToSupply);
         cTokenToBorrow = ICToken(_cTokenToBorrow);
+        // tokenToBorrow = IERC20(_tokenToBorrow);
         // leverage = _leverage;
+        IERC20(cTokenToBorrow.underlying()).approve(address(router), MAX);
     }
 
     receive() external payable {}
@@ -58,7 +69,7 @@ contract LongPosition is OracleRef {
     //     cTokenToSupply.mint{value: msg.value}();
     // }
 
-    function openPosition() external payable {
+    function openPosition() external payable returns (uint256) {
         //supply
         // sanity check
         uint256 amountToSupply = msg.value;
@@ -70,9 +81,13 @@ contract LongPosition is OracleRef {
         ) = collateralizationOracle.read();
         require(valid, "oracle invalid");
 
+        console.log("collateralPrice", collateralPrice.asUint256());
+
         uint256 usdValueIncollateral = collateralPrice
             .mul(amountToSupply)
             .asUint256();
+
+        console.log("usdValueIncollateral", usdValueIncollateral);
 
         Decimal.D256 memory maxLeverage = getMaxLeverage();
 
@@ -80,14 +95,47 @@ contract LongPosition is OracleRef {
             .mul(usdValueIncollateral)
             .asUint256();
 
+        console.log("amountToBorrow", amountToBorrow);
+
         ////
+
+        // enter market
+        address[] memory markets = new address[](1);
+        markets[0] = address(cTokenToSupply);
+        uint256[] memory results = comptroller.enterMarkets(markets);
+
+        if (results[0] != 0) revert CompoundLending_comptrollerEntermarket();
+
         //borrow
         updateOracle();
 
         // ICEther cEther = ICEther(_cToken);
-        uint256 result = cTokenToSupply.borrow(amountToBorrow);
+        uint256 result = cTokenToBorrow.borrow(amountToBorrow);
 
         if (result != 0) revert CompoundLending_cTokenBorrow();
+
+        //swap
+
+        address[] memory path = new address[](2);
+        // path[0] = address(tokenToBorrow);
+        path[0] = cTokenToBorrow.underlying();
+        path[1] = address(WETH);
+
+        uint256 amountOut = router.swapExactTokensForETH(
+            amountToBorrow,
+            0,
+            path,
+            address(this),
+            block.timestamp
+        )[1];
+
+        uint256 supplybalance = cTokenToSupply.balanceOfUnderlying(
+            address(this)
+        );
+
+        console.log("supplybalance", supplybalance);
+
+        return amountOut;
     }
 
     // function _openPosition() internal {
