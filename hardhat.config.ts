@@ -42,12 +42,7 @@ const config: HardhatUserConfig = {
           optimizer: {
             enabled: true,
             runs: 100
-          },
-          outputSelection: {
-            "*": {
-                "*": ["storageLayout"],
-            },
-          },
+          }
         }
       },
 
@@ -57,12 +52,7 @@ const config: HardhatUserConfig = {
           optimizer: {
             enabled: true,
             runs: 200
-          },
-          outputSelection: {
-            "*": {
-                "*": ["storageLayout"],
-            },
-          },
+          }
         }
       },
 
@@ -72,7 +62,12 @@ const config: HardhatUserConfig = {
           optimizer: {
             enabled: true,
             runs: 200
-          }
+          },
+          outputSelection: {
+            "*": {
+                "*": ["storageLayout"],
+            },
+          },
         }
       }
       
@@ -120,16 +115,28 @@ const config: HardhatUserConfig = {
       4: "0x2eaa9d77ae4d8f9cdd9faacd44016e746485bddb"
     },
 
-    // cether: {
-    //   31337: "0x4ddc2d193948926d02f9b1fe9e1daa0718270ed5",
-    //   1: "0x4ddc2d193948926d02f9b1fe9e1daa0718270ed5", // Mapped from  https://compound.finance/docs
-    //   4: "0xd6801a1dffcd0a410336ef88def4320d6df1883e"
-    // },
+    cether: {
+      31337: "0x4ddc2d193948926d02f9b1fe9e1daa0718270ed5",
+      1: "0x4ddc2d193948926d02f9b1fe9e1daa0718270ed5", // Mapped from  https://compound.finance/docs
+      4: "0xd6801a1dffcd0a410336ef88def4320d6df1883e"
+    },
 
     cdai: {
       31337: "0x5d3a536e4d6dbd6114cc1ead35777bab948e3643",
       1: "0x5d3a536e4d6dbd6114cc1ead35777bab948e3643", // Mapped from  https://compound.finance/docs
       4: "0x6d7f0754ffeb405d23c51ce938289d4835be3b14"
+    },
+
+    ethChainlinkOracle: {
+      31337: "0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419", //Mock to mainnet
+      1: "0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419", //Mapped from  https://docs.chain.link/docs/ethereum-addresses/
+      4: "0x8A753747A1Fa494EC906cE90E9f37563A8AF630e",
+    },
+
+    daiChainlinkOracle: {
+      31337: "0xAed0c38402a5d19df6E4c03F4E2DceD6e29c1ee9", //Mock to mainnet
+      1: "0xAed0c38402a5d19df6E4c03F4E2DceD6e29c1ee9", //Mapped from  https://docs.chain.link/docs/ethereum-addresses/
+      4: "0x2bA49Aaa16E6afD2a993473cfB70Fa8559B523cF",
     },
 
 
