@@ -65,10 +65,6 @@ contract LongPosition is OracleRef {
 
     receive() external payable {}
 
-    // function supply() external payable {
-    //     cTokenToSupply.mint{value: msg.value}();
-    // }
-
     function openPosition() external payable returns (uint256) {
         //supply
         // sanity check
@@ -81,21 +77,15 @@ contract LongPosition is OracleRef {
         ) = collateralizationOracle.read();
         require(valid, "oracle invalid");
 
-        console.log("collateralPrice", collateralPrice.asUint256());
-
         uint256 usdValueIncollateral = collateralPrice
             .mul(amountToSupply)
             .asUint256();
-
-        console.log("usdValueIncollateral", usdValueIncollateral);
 
         Decimal.D256 memory maxLeverage = getMaxLeverage();
 
         uint256 amountToBorrow = maxLeverage
             .mul(usdValueIncollateral)
             .asUint256();
-
-        console.log("amountToBorrow", amountToBorrow);
 
         ////
 
@@ -109,15 +99,12 @@ contract LongPosition is OracleRef {
         //borrow
         updateOracle();
 
-        // ICEther cEther = ICEther(_cToken);
         uint256 result = cTokenToBorrow.borrow(amountToBorrow);
-
         if (result != 0) revert CompoundLending_cTokenBorrow();
 
         //swap
 
         address[] memory path = new address[](2);
-        // path[0] = address(tokenToBorrow);
         path[0] = cTokenToBorrow.underlying();
         path[1] = address(WETH);
 
@@ -129,21 +116,10 @@ contract LongPosition is OracleRef {
             block.timestamp
         )[1];
 
-        uint256 supplybalance = cTokenToSupply.balanceOfUnderlying(
-            address(this)
-        );
-
-        console.log("supplybalance", supplybalance);
-
         return amountOut;
     }
 
     // function _openPosition() internal {
-    //     updateOracle();
-    //     // ICEther cEther = ICEther(_cToken);
-    //     uint256 result = cTokenToSupply.borrow(_borrowAmount);
-
-    //     if (result != 0) revert CompoundLending_cTokenBorrow();
     // }
 
     function getMaxBorrowAmount() external view returns (uint256) {
