@@ -40,29 +40,27 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     log("----------------------------------------------------");
     
 
-
-    let borrowOracleAddress;
-    let supplyOracleAddress;
     let comptrollerAddress;
     let cEtherAddress;
+    let borrowOracleAddress;
+    let supplyOracleAddress;
     let cTokenToSupplyAddress;
     let cTokenToBorrowAddress
 
-    borrowOracleAddress = (await get('OraclePriceDAI')).address;
-    supplyOracleAddress = (await get('OraclePriceETH')).address;
     comptrollerAddress = (await get('ComptrollerCompound')).address;
     cEtherAddress = (await get('CEtherCompound')).address;
+    borrowOracleAddress = (await get('OraclePriceDAI')).address;
+    supplyOracleAddress = (await get('OraclePriceETH')).address;
     cTokenToSupplyAddress = (await get('CEtherCompound')).address;
     cTokenToBorrowAddress = (await get('CDaiCompound')).address;
 
     
     const  Args : {[key: string]: any} = {};
 
-
-    Args[`borrowOracle`] = borrowOracleAddress;
-    Args[`supplyOracle`] = supplyOracleAddress;
     Args[`comptroller`] = comptrollerAddress;
     Args[`cEther`] = cEtherAddress;
+    Args[`borrowOracle`] = borrowOracleAddress;
+    Args[`supplyOracle`] = supplyOracleAddress;
     Args[`cTokenToSupply`] = cTokenToSupplyAddress;
     Args[`cTokenToBorrow`] = cTokenToBorrowAddress;
 

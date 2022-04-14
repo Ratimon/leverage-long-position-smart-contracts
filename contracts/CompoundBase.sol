@@ -8,11 +8,15 @@ import {ICEther} from "./interfaces/ICEther.sol";
 import {ICToken} from "./interfaces/ICToken.sol";
 
 contract CompoundBase {
-    error CompoundLending_cTokenMint();
-    error CompoundLending_cTokenRedeem();
-    error CompoundLending_comptrollerEntermarket();
-    error CompoundLending_cTokenBorrow();
-    error CompoundLending_cTokenRepayborrow();
+    error Compound_cTokenMint();
+    error Compound_cTokenRedeem();
+    error Compound_cTokenBorrow();
+    error Compound_cTokenRepayborrow();
+
+    error Compound_comptrollerEntermarket();
+    error Compound_comptrollerAccountLiquidityError();
+    error Compound_comptrollerAccountLiquidityshortfall();
+    error Compound_comptrollerAccountLiquidityZero();
 
     IComptroller public immutable comptroller;
     ICEther public immutable cEther;
@@ -51,7 +55,7 @@ contract CompoundBase {
         IERC20(underlyingAddress).approve(_cTokenAddress, _underlyingAmount);
         uint256 result = cToken.mint(_underlyingAmount);
 
-        if (result != 0) revert CompoundLending_cTokenMint();
+        if (result != 0) revert Compound_cTokenMint();
     }
 
     function redeemUnderliying(
@@ -62,7 +66,7 @@ contract CompoundBase {
 
         uint256 result = cToken.redeemUnderlying(_underlyingAmount);
 
-        if (result != 0) revert CompoundLending_cTokenRedeem();
+        if (result != 0) revert Compound_cTokenRedeem();
     }
 
     function borrow(address _cTokenAddress, uint256 _underlyingAmount)
@@ -71,7 +75,7 @@ contract CompoundBase {
         ICToken cToken = ICToken(_cTokenAddress);
         uint256 result = cToken.borrow(_underlyingAmount);
 
-        if (result != 0) revert CompoundLending_cTokenBorrow();
+        if (result != 0) revert Compound_cTokenBorrow();
     }
 
     function repayBorrow(address _cTokenAddress, uint256 _underlyingAmount)
@@ -98,7 +102,7 @@ contract CompoundBase {
         ICToken cToken = ICToken(_cTokenAddress);
         uint256 result = cToken.repayBorrow(_underlyingAmount);
 
-        if (result != 0) revert CompoundLending_cTokenRepayborrow();
+        if (result != 0) revert Compound_cTokenRepayborrow();
     }
 
     function enterMarket(address cTokenAddress) internal {
@@ -106,7 +110,7 @@ contract CompoundBase {
         markets[0] = cTokenAddress;
         uint256[] memory results = comptroller.enterMarkets(markets);
 
-        if (results[0] != 0) revert CompoundLending_comptrollerEntermarket();
+        if (results[0] != 0) revert Compound_comptrollerEntermarket();
     }
 
     function claimComp() internal {
@@ -115,5 +119,22 @@ contract CompoundBase {
 
     function getCompAddress() internal view returns (address) {
         return comptroller.getCompAddress();
+    }
+
+    function getAccountLiquidity() internal view returns (uint256) {
+        (uint256 error, uint256 liquidity, uint256 shortfall) = comptroller
+            .getAccountLiquidity(address(this));
+
+        if (error != 0) revert Compound_comptrollerAccountLiquidityError();
+        if (shortfall != 0)
+            revert Compound_comptrollerAccountLiquidityshortfall();
+
+        if (liquidity == 0) revert Compound_comptrollerAccountLiquidityZero();
+
+        // require(error == 0, "error");
+        // require(shortfall == 0, "shortfall > 0");
+        // require(liquidity > 0, "liquidity = 0");
+
+        return liquidity;
     }
 }
