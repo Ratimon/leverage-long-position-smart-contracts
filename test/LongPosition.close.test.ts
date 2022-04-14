@@ -82,7 +82,6 @@ describe('LongPosition: closePosition', function () {
     const ETHbalanceInLongPositionBefore = await provider.getBalance(LongETHPosition.address);
 
     let options = {value: parseEther("1.0")}
-
     await (accounts.deployer.LongETHPosition as LongPosition).openPosition(options)
 
     const DeployerETHBalanceAfter =  await provider.getBalance(accounts.deployer.address);

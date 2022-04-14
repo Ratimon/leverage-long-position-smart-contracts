@@ -60,9 +60,9 @@ describe('LongPosition: openPosition', function () {
     const leverage =  await LongETHPosition.leverage()
     const BASIS_POINTS_GRANULARITY =  await LongETHPosition.BASIS_POINTS_GRANULARITY()
 
-    const DeployerETHBalanceInvestment = DeployerETHBalanceBefore.sub(DeployerETHBalanceAfter)
+    const DepositedETHBalance = DeployerETHBalanceBefore.sub(DeployerETHBalanceAfter)
 
-    const borrowedAmountInETH = DeployerETHBalanceInvestment.mul(leverage)
+    const borrowedAmountInETH = DepositedETHBalance.mul(leverage)
       .div(BASIS_POINTS_GRANULARITY)
 
     const IncreaseInETHBalancePosition = ETHbalanceInLongPositionAfter.sub(ETHbalanceInLongPositionBefore)

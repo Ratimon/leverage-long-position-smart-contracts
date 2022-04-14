@@ -41,32 +41,28 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     
 
 
-    let borrowOracleAddress;
-    let supplyOracleAddress;
-    let comptrollerAddress;
-    let cTokenToSupplyAddress;
-    let cTokenToBorrowAddress
+    let oracleAddress;
+    let backupOracleAddress;
+    let isInvert;
 
-    borrowOracleAddress = (await get('OraclePriceDAI')).address;
-    supplyOracleAddress = (await get('OraclePriceETH')).address;
-    comptrollerAddress = (await get('ComptrollerCompound')).address;
-    cTokenToSupplyAddress = (await get('CEtherCompound')).address;
-    cTokenToBorrowAddress = (await get('CDaiCompound')).address;
+
+    oracleAddress = (await get('OracleChainlinkWrapper_USD_per_ETH')).address;
+    backupOracleAddress = (await get('OracleChainlinkWrapper_USD_per_ETH')).address;
+    isInvert = false
+
 
     
     const  Args : {[key: string]: any} = {};
 
 
-    Args[`borrowOracle`] = borrowOracleAddress;
-    Args[`supplyOracle`] = supplyOracleAddress;
-    Args[`comptroller`] = comptrollerAddress;
-    Args[`cTokenToSupply`] = cTokenToSupplyAddress;
-    Args[`cTokenToBorrow`] = cTokenToBorrowAddress;
+    Args[`oracle`] = oracleAddress;
+    Args[`backupOracle`] = backupOracleAddress;
+    Args[`isInvert`] = isInvert;
 
 
-    const deploymentName = "LongETHPosition"
+    const deploymentName = "OraclePriceETH"
     const Result = await deploy(deploymentName, {
-        contract: "LongPosition", 
+        contract: "PriceOracle", 
         from: deployer,
         args: Object.values(Args),
         log: true,
@@ -105,6 +101,11 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
         }
 
+        let peg = await read(deploymentName,"readOracle")
+
+
+        log(`Price : ${chalk.green(peg)}`);
+
 
     }
 
@@ -117,5 +118,5 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   
 };
 export default func;
-func.tags = ["2-0-01","2-0", 'longETH','protocol'];
-func.dependencies = ["oracle"]
+func.tags = ["1-2-2","1-2", 'eth-price','oracle'];
+func.dependencies = ["1-2-1"]

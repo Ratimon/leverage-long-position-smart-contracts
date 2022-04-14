@@ -14,11 +14,11 @@ import {IUniswapV2Router} from "./interfaces/IUniswapV2Router.sol";
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
-import {IOracle, OracleRef, Decimal} from "./refs/OracleRef.sol";
+import {IOracle, IOracleRef, Decimal} from "./refs/OracleRef.sol";
 
 //refactor constant.sol
 
-contract LongPosition is OracleRef {
+contract LongPosition {
     using Address for address;
     using Decimal for Decimal.D256;
     using SafeERC20 for IERC20;
@@ -35,7 +35,8 @@ contract LongPosition is OracleRef {
     uint256 public immutable leverage = 3_000;
     // uint256 private immutable MAX = ~uint256(0);
 
-    IOracle public collateralizationOracle;
+    IOracleRef public borrowOracle;
+    IOracleRef public supplyOracle;
 
     IComptroller public comptroller;
 
@@ -43,19 +44,14 @@ contract LongPosition is OracleRef {
     ICToken public cTokenToBorrow;
 
     constructor(
-        address _oracle,
-        address _backupOracle,
-        bool _isInvert,
-        address _collateralizationOracle,
+        address _borrowOracle,
+        address _supplyOracle,
         address _comptroller,
         address _cTokenToSupply,
         address _cTokenToBorrow
-    )
-        // address _tokenToBorrow
-        // uint256 _leverage
-        OracleRef(_oracle, _backupOracle, 0, _isInvert)
-    {
-        collateralizationOracle = IOracle(_collateralizationOracle);
+    ) {
+        borrowOracle = IOracleRef(_borrowOracle);
+        supplyOracle = IOracleRef(_supplyOracle);
         comptroller = IComptroller(_comptroller);
         WETH = IWETH9(0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2);
         router = IUniswapV2Router(0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D);
@@ -81,13 +77,18 @@ contract LongPosition is OracleRef {
         uint256 amountToSupply = msg.value;
         cTokenToSupply.mint{value: amountToSupply}();
 
-        (
-            Decimal.D256 memory collateralPrice,
-            bool valid
-        ) = collateralizationOracle.read();
-        require(valid, "oracle invalid");
+        // (
+        //     Decimal.D256 memory collateralPrice,
+        //     bool valid
+        // ) = supplyOracle.read();
+        // require(valid, "oracle invalid");
 
-        uint256 usdValueIncollateral = collateralPrice
+        // uint256 collasteralPrice = supplyOracle.readOracle();
+
+        supplyOracle.updateOracle();
+
+        uint256 usdValueIncollateral = supplyOracle
+            .readOracle()
             .mul(amountToSupply)
             .asUint256();
 
@@ -107,7 +108,7 @@ contract LongPosition is OracleRef {
         if (results[0] != 0) revert CompoundLending_comptrollerEntermarket();
 
         //borrow
-        updateOracle();
+        borrowOracle.updateOracle();
 
         uint256 result = cTokenToBorrow.borrow(amountToBorrow);
         if (result != 0) revert CompoundLending_cTokenBorrow();
@@ -214,7 +215,8 @@ contract LongPosition is OracleRef {
         // );
 
         // liquidirtInBorrowedToken =  (DAI per USD) x (USD per ETH)
-        uint256 maxAmountInBorrowedToken = readOracle()
+        uint256 maxAmountInBorrowedToken = borrowOracle
+            .readOracle()
             .mul(liquidity)
             .asUint256();
         //hardcode decimal
