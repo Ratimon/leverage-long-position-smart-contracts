@@ -30,7 +30,8 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     const {
       deployer,
       weth,
-      dai
+      dai,
+      comp
     } = await getNamedAccounts();
 
     log(chalk.cyan(`.....`));
@@ -66,6 +67,19 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     if(existingDAI) {
       log(`Deployment Saved: TokenDAI with address ${chalk.green(existingDAI.address)}`);
     }
+
+    const compSubmission : DeploymentSubmission = {
+      abi: erc20abi,
+      address: comp
+    }
+
+    await save('TokenCOMP', compSubmission);
+    let existingCOMP = await getOrNull('TokenCOMP');
+
+    if(existingCOMP) {
+      log(`Deployment Saved: TokenCOMP with address ${chalk.green(existingCOMP.address)}`);
+    }
+
 
 
 

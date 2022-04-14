@@ -19,6 +19,7 @@ const setup = deployments.createFixture(async () => {
     const contracts = {
         TokenWETH: <IERC20>await ethers.getContract('TokenWETH'),
         TokenDAI: <IERC20>await ethers.getContract('TokenDAI'),
+        TokenCOMP: <IERC20>await ethers.getContract('TokenCOMP'),
         RouterUniswap: <IUniswapV2Router>await ethers.getContract('RouterUniswap'),
         OracleChainlinkWrapper_USD_per_ETH: <ChainlinkOracleWrapper>await ethers.getContract('OracleChainlinkWrapper_USD_per_ETH'),
         CEtherCompound: <ICEther>await ethers.getContract('CEtherCompound'),
@@ -49,6 +50,7 @@ describe('LongPosition: closePosition', function () {
 
   let TokenWETH: IERC20;
   let TokenDAI: IERC20;
+  let TokenCOMP: IERC20;
   let RouterUniswap: IUniswapV2Router;
 
 //   let ComptrollerCompound: IComptroller;
@@ -64,6 +66,7 @@ describe('LongPosition: closePosition', function () {
 
     TokenWETH = fixture.TokenWETH;
     TokenDAI = fixture.TokenDAI;
+    TokenCOMP = fixture.TokenCOMP;
     RouterUniswap = fixture.RouterUniswap;
     // ComptrollerCompound = fixture.ComptrollerCompound;
     CEtherCompound= fixture.CEtherCompound;
@@ -92,18 +95,18 @@ describe('LongPosition: closePosition', function () {
     const leverage =  await LongETHPosition.leverage()
     const BASIS_POINTS_GRANULARITY =  await LongETHPosition.BASIS_POINTS_GRANULARITY()
 
-    const DeployerETHBalanceInvestment = DeployerETHBalanceBefore.sub(DeployerETHBalanceAfter)
+    const DepositedETHBalance = DeployerETHBalanceBefore.sub(DeployerETHBalanceAfter)
 
-    const borrowedAmountInETH = DeployerETHBalanceInvestment.mul(leverage)
+    const borrowedAmountInETH = DepositedETHBalance.mul(leverage)
       .div(BASIS_POINTS_GRANULARITY)
 
     const IncreaseInETHBalancePosition = ETHbalanceInLongPositionAfter.sub(ETHbalanceInLongPositionBefore)
 
-    console.log(`IncreaseInETHBalancePosition`, chalk.blue(formatUnits(IncreaseInETHBalancePosition)));
-    console.log(`IncreaseInETHBalancePosition parse`, chalk.blue(parseFloat(formatUnits(IncreaseInETHBalancePosition.toString(),16))));
+    // console.log(`IncreaseInETHBalancePosition`, chalk.blue(formatUnits(IncreaseInETHBalancePosition)));
+    // console.log(`IncreaseInETHBalancePosition parse`, chalk.blue(parseFloat(formatUnits(IncreaseInETHBalancePosition.toString(),16))));
 
-    console.log(`DeployerETHBalanceInvestment`, chalk.blue(formatUnits(borrowedAmountInETH)));
-    console.log(`DeployerETHBalanceInvestment parse`, chalk.blue(parseFloat(formatUnits(borrowedAmountInETH.toString(),16))));
+    // console.log(`DeployerETHBalanceInvestment`, chalk.blue(formatUnits(borrowedAmountInETH)));
+    // console.log(`DeployerETHBalanceInvestment parse`, chalk.blue(parseFloat(formatUnits(borrowedAmountInETH.toString(),16))));
 
     expect(parseFloat(formatUnits(IncreaseInETHBalancePosition.toString(),16)))
       .to.closeTo(parseFloat(formatUnits(borrowedAmountInETH.toString(),16)),0.1)
@@ -112,15 +115,14 @@ describe('LongPosition: closePosition', function () {
 
   it("should advance block time and ETH should increase", async function () {
 
-    await advanceTimeAndBlock(7*DAY.toNumber());
+    await advanceTimeAndBlock(7*MONTH.toNumber());
 
-    let amountToProvide = 500000000; //500_000_000 DAI
+    let amountToProvide = 20000000; //20_000_000 DAI
 
     // at block 14518731
     // let top3DaiAddress = '0x5D38B4e4783E34e2301A2a36c39a03c45798C4dD';
     let top3DaiAddress = '0xE78388b4CE79068e89Bf8aA7f218eF6b9AB0e9d0';
 
-    
     await depositGas(top3DaiAddress, 1)
     await setERC20Balance(top3DaiAddress, users[0].address, amountToProvide, TokenDAI);
 
@@ -133,6 +135,57 @@ describe('LongPosition: closePosition', function () {
       users[0].address,
       Date.now() + 1000 * 60 * 10,
     )
+
+  })
+
+  it("should closePosistion", async function () {
+
+    const DeployerETHBalanceBefore =  await provider.getBalance(accounts.deployer.address);
+    const ETHbalanceInLongPositionBefore = await provider.getBalance(LongETHPosition.address);
+    const DeployerDaiBalanceBefore =  await TokenDAI.balanceOf(accounts.deployer.address);
+    const DeployerCompBalanceBefore =  await TokenCOMP.balanceOf(accounts.deployer.address);
+
+
+    await (accounts.deployer.LongETHPosition as LongPosition).closePosition();
+
+
+
+    const DeployerETHBalanceAfter =  await provider.getBalance(accounts.deployer.address);
+    const ETHbalanceInLongPositionAfter = await provider.getBalance(LongETHPosition.address);
+    const DeployerDaiBalanceAfter =  await TokenDAI.balanceOf(accounts.deployer.address);
+    const DeployerCompBalanceAfter =  await TokenCOMP.balanceOf(accounts.deployer.address);
+
+    const leverage =  await LongETHPosition.leverage()
+    const BASIS_POINTS_GRANULARITY =  await LongETHPosition.BASIS_POINTS_GRANULARITY()
+
+    const withdrawedETHBalance = DeployerETHBalanceAfter.sub(DeployerETHBalanceBefore)
+
+    const borrowedAmountInETH = withdrawedETHBalance.mul(leverage)
+      .div(BASIS_POINTS_GRANULARITY)
+
+    const DecreaseInETHBalancePosition = ETHbalanceInLongPositionBefore.sub(ETHbalanceInLongPositionAfter);
+
+
+    expect(parseFloat(formatUnits(DecreaseInETHBalancePosition.toString(),16)))
+      .to.closeTo(parseFloat(formatUnits(borrowedAmountInETH.toString(),16)),0.1);
+
+    const ProfitInDai = DeployerDaiBalanceAfter.sub(DeployerDaiBalanceBefore)
+    const BonusInComp = DeployerCompBalanceAfter.sub(DeployerCompBalanceBefore)
+
+
+    expect(ProfitInDai).to.be.gt(parseEther('0'));
+    expect(BonusInComp).to.be.gt(parseEther('0'));
+
+
+    // console.log(`DeployerETHBalanceBefore`, chalk.blue(formatUnits(DeployerETHBalanceBefore)));
+    // console.log(`ETHbalanceInLongPositionBefore`, chalk.blue(formatUnits(ETHbalanceInLongPositionBefore)));
+    // console.log(`DeployerDaiBalanceBefore`, chalk.blue(formatUnits(DeployerDaiBalanceBefore)));
+    // console.log(`DeployerCompBalanceBefore`, chalk.blue(formatUnits(DeployerCompBalanceBefore)));
+    // console.log(`DeployerETHBalanceAfter`, chalk.blue(formatUnits(DeployerETHBalanceAfter)));
+    // console.log(`ETHbalanceInLongPositionAfter`, chalk.blue(formatUnits(ETHbalanceInLongPositionAfter)));
+    // console.log(`DeployerDaiBalanceAfter`, chalk.blue(formatUnits(DeployerDaiBalanceAfter)));
+    // console.log(`DeployerCompBalanceAfter`, chalk.blue(formatUnits(DeployerCompBalanceAfter)));
+
 
 
 

@@ -11,12 +11,17 @@ import {ICEther} from "./interfaces/ICEther.sol";
 import {ICToken} from "./interfaces/ICToken.sol";
 import {IUniswapV2Router} from "./interfaces/IUniswapV2Router.sol";
 
+import {Address} from "@openzeppelin/contracts/utils/Address.sol";
+import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+
 import {IOracle, OracleRef, Decimal} from "./refs/OracleRef.sol";
 
 //refactor constant.sol
 
 contract LongPosition is OracleRef {
+    using Address for address;
     using Decimal for Decimal.D256;
+    using SafeERC20 for IERC20;
 
     error CompoundLending_cTokenMint();
     error CompoundLending_cTokenRedeem();
@@ -28,7 +33,7 @@ contract LongPosition is OracleRef {
     IUniswapV2Router immutable router;
     uint256 public immutable BASIS_POINTS_GRANULARITY = 10_000;
     uint256 public immutable leverage = 3_000;
-    uint256 private immutable MAX = ~uint256(0);
+    // uint256 private immutable MAX = ~uint256(0);
 
     IOracle public collateralizationOracle;
 
@@ -36,8 +41,6 @@ contract LongPosition is OracleRef {
 
     ICEther public cTokenToSupply;
     ICToken public cTokenToBorrow;
-
-    // IERC20 public tokenToBorrow;
 
     constructor(
         address _oracle,
@@ -60,7 +63,14 @@ contract LongPosition is OracleRef {
         cTokenToBorrow = ICToken(_cTokenToBorrow);
         // tokenToBorrow = IERC20(_tokenToBorrow);
         // leverage = _leverage;
-        IERC20(cTokenToBorrow.underlying()).approve(address(router), MAX);
+        IERC20(cTokenToBorrow.underlying()).approve(
+            address(router),
+            type(uint256).max
+        );
+        IERC20(cTokenToBorrow.underlying()).approve(
+            address(cTokenToBorrow),
+            type(uint256).max
+        );
     }
 
     receive() external payable {}
@@ -118,6 +128,101 @@ contract LongPosition is OracleRef {
 
         return amountOut;
     }
+
+    function closePosition() external {
+        // sell ETH
+        address[] memory path = new address[](2);
+        path[0] = address(WETH);
+        path[1] = cTokenToBorrow.underlying();
+
+        // uint256 amountOut = router.swapExactETHForTokens{
+        //     value: address(this).balance
+        // }(1, path, address(this), block.timestamp)[1];
+
+        router.swapExactETHForTokens{value: address(this).balance}(
+            1,
+            path,
+            address(this),
+            block.timestamp
+        )[1];
+
+        // repay borrow
+        uint256 borrowedAmount = cTokenToBorrow.borrowBalanceCurrent(
+            address(this)
+        );
+
+        uint256 repayresult = cTokenToBorrow.repayBorrow(borrowedAmount);
+
+        if (repayresult != 0) revert CompoundLending_cTokenRepayborrow();
+
+        // redeem
+        uint256 suppliedAmount = cTokenToSupply.balanceOfUnderlying(
+            address(this)
+        );
+
+        uint256 result = cTokenToSupply.redeemUnderlying(suppliedAmount);
+
+        if (result != 0) revert CompoundLending_cTokenRedeem();
+
+        uint256 profitAmount = IERC20(cTokenToBorrow.underlying()).balanceOf(
+            address(this)
+        );
+
+        console.log(
+            "IERC20(cTokenToBorrow.underlying()).balanceOf(address(this))",
+            profitAmount
+        );
+
+        IERC20(cTokenToBorrow.underlying()).safeTransfer(
+            msg.sender,
+            profitAmount
+        );
+
+        console.log("address(this).balance", address(this).balance);
+
+        Address.sendValue(payable(msg.sender), address(this).balance);
+        // emit WithdrawETH(msg.sender, to, address(this).balance);
+
+        // (bool success, ) = msg.sender.call{value: address(this).balance}("");
+        // require(success, "Transfer failed.");
+
+        // claimComp
+        // comptroller.claimComp(msg.sender);
+        comptroller.claimComp(address(this));
+
+        console.log(
+            "IERC20(comptroller.getCompAddress()).balanceOf(address(this))",
+            IERC20(comptroller.getCompAddress()).balanceOf(address(this))
+        );
+
+        uint256 bonusAmount = IERC20(comptroller.getCompAddress()).balanceOf(
+            address(this)
+        );
+
+        IERC20(comptroller.getCompAddress()).safeTransfer(
+            msg.sender,
+            bonusAmount
+        );
+
+        console.log(
+            "IERC20(comptroller.getCompAddress()).balanceOf(address(this))",
+            IERC20(comptroller.getCompAddress()).balanceOf(address(this))
+        );
+
+        console.log(
+            "IERC20(comptroller.getCompAddress()).balanceOf(msg.sender)",
+            IERC20(comptroller.getCompAddress()).balanceOf(msg.sender)
+        );
+        // console.log("address(this).balance", address(this).balance);
+    }
+
+    // function claimComp() internal {
+    //     comptroller.claimComp(address(this));
+    // }
+
+    // function getCompAddress() internal view returns (address) {
+    //     return comptroller.getCompAddress();
+    // }
 
     // function _openPosition() internal {
     // }
