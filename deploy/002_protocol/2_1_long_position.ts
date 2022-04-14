@@ -44,12 +44,14 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     let borrowOracleAddress;
     let supplyOracleAddress;
     let comptrollerAddress;
+    let cEtherAddress;
     let cTokenToSupplyAddress;
     let cTokenToBorrowAddress
 
     borrowOracleAddress = (await get('OraclePriceDAI')).address;
     supplyOracleAddress = (await get('OraclePriceETH')).address;
     comptrollerAddress = (await get('ComptrollerCompound')).address;
+    cEtherAddress = (await get('CEtherCompound')).address;
     cTokenToSupplyAddress = (await get('CEtherCompound')).address;
     cTokenToBorrowAddress = (await get('CDaiCompound')).address;
 
@@ -60,6 +62,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     Args[`borrowOracle`] = borrowOracleAddress;
     Args[`supplyOracle`] = supplyOracleAddress;
     Args[`comptroller`] = comptrollerAddress;
+    Args[`cEther`] = cEtherAddress;
     Args[`cTokenToSupply`] = cTokenToSupplyAddress;
     Args[`cTokenToBorrow`] = cTokenToBorrowAddress;
 

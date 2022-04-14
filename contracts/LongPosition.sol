@@ -1,33 +1,33 @@
 // SPDX-License-Identifier: MIT
 pragma solidity =0.8.13;
 
-import "hardhat/console.sol";
-
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 import {IWETH9} from "./interfaces/IWETH9.sol";
-import {IComptroller} from "./interfaces/IComptroller.sol";
-import {ICEther} from "./interfaces/ICEther.sol";
-import {ICToken} from "./interfaces/ICToken.sol";
+// import {IComptroller} from "./interfaces/IComptroller.sol";
+// import {ICEther} from "./interfaces/ICEther.sol";
+// import {ICToken} from "./interfaces/ICToken.sol";
 import {IUniswapV2Router} from "./interfaces/IUniswapV2Router.sol";
+import {ICEther, ICToken, CompoundBase} from "./CompoundBase.sol";
 
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import {Pausable} from "@openzeppelin/contracts/security/Pausable.sol";
 
 import {IOracle, IOracleRef, Decimal} from "./refs/OracleRef.sol";
 
 //refactor constant.sol
 
-contract LongPosition {
+contract LongPosition is Pausable, CompoundBase {
     using Address for address;
     using Decimal for Decimal.D256;
     using SafeERC20 for IERC20;
 
-    error CompoundLending_cTokenMint();
-    error CompoundLending_cTokenRedeem();
-    error CompoundLending_comptrollerEntermarket();
-    error CompoundLending_cTokenBorrow();
-    error CompoundLending_cTokenRepayborrow();
+    // error CompoundLending_cTokenMint();
+    // error CompoundLending_cTokenRedeem();
+    // error CompoundLending_comptrollerEntermarket();
+    // error CompoundLending_cTokenBorrow();
+    // error CompoundLending_cTokenRepayborrow();
 
     IWETH9 immutable WETH;
     IUniswapV2Router immutable router;
@@ -38,7 +38,7 @@ contract LongPosition {
     IOracleRef public borrowOracle;
     IOracleRef public supplyOracle;
 
-    IComptroller public comptroller;
+    // IComptroller public comptroller;
 
     ICEther public cTokenToSupply;
     ICToken public cTokenToBorrow;
@@ -47,18 +47,19 @@ contract LongPosition {
         address _borrowOracle,
         address _supplyOracle,
         address _comptroller,
+        address _cEther,
         address _cTokenToSupply,
         address _cTokenToBorrow
-    ) {
+    ) CompoundBase(_comptroller, _cEther) {
         borrowOracle = IOracleRef(_borrowOracle);
         supplyOracle = IOracleRef(_supplyOracle);
-        comptroller = IComptroller(_comptroller);
+        // comptroller = IComptroller(_comptroller);
         WETH = IWETH9(0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2);
         router = IUniswapV2Router(0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D);
         cTokenToSupply = ICEther(_cTokenToSupply);
+        require(cTokenToSupply.isCToken(), "Not a cToken");
         cTokenToBorrow = ICToken(_cTokenToBorrow);
-        // tokenToBorrow = IERC20(_tokenToBorrow);
-        // leverage = _leverage;
+        require(cTokenToBorrow.isCToken(), "Not a cToken");
         IERC20(cTokenToBorrow.underlying()).approve(
             address(router),
             type(uint256).max
@@ -71,19 +72,12 @@ contract LongPosition {
 
     receive() external payable {}
 
-    function openPosition() external payable returns (uint256) {
+    function openPosition() external payable whenNotPaused returns (uint256) {
         //supply
         // sanity check
         uint256 amountToSupply = msg.value;
-        cTokenToSupply.mint{value: amountToSupply}();
-
-        // (
-        //     Decimal.D256 memory collateralPrice,
-        //     bool valid
-        // ) = supplyOracle.read();
-        // require(valid, "oracle invalid");
-
-        // uint256 collasteralPrice = supplyOracle.readOracle();
+        // cTokenToSupply.mint{value: amountToSupply}();
+        supply(address(cTokenToSupply), amountToSupply);
 
         supplyOracle.updateOracle();
 
@@ -101,17 +95,19 @@ contract LongPosition {
         ////
 
         // enter market
-        address[] memory markets = new address[](1);
-        markets[0] = address(cTokenToSupply);
-        uint256[] memory results = comptroller.enterMarkets(markets);
+        enterMarket(address(cTokenToSupply));
+        // address[] memory markets = new address[](1);
+        // markets[0] = address(cTokenToSupply);
+        // uint256[] memory results = comptroller.enterMarkets(markets);
 
-        if (results[0] != 0) revert CompoundLending_comptrollerEntermarket();
+        // if (results[0] != 0) revert CompoundLending_comptrollerEntermarket();
 
         //borrow
         borrowOracle.updateOracle();
 
-        uint256 result = cTokenToBorrow.borrow(amountToBorrow);
-        if (result != 0) revert CompoundLending_cTokenBorrow();
+        borrow(address(cTokenToBorrow), amountToBorrow);
+        // uint256 result = cTokenToBorrow.borrow(amountToBorrow);
+        // if (result != 0) revert CompoundLending_cTokenBorrow();
 
         //swap
 
@@ -130,7 +126,7 @@ contract LongPosition {
         return amountOut;
     }
 
-    function closePosition() external {
+    function closePosition() external whenNotPaused {
         // sell ETH
         address[] memory path = new address[](2);
         path[0] = address(WETH);
@@ -148,18 +144,22 @@ contract LongPosition {
             address(this)
         );
 
-        uint256 repayresult = cTokenToBorrow.repayBorrow(borrowedAmount);
+        repayBorrow(address(cTokenToBorrow), borrowedAmount);
 
-        if (repayresult != 0) revert CompoundLending_cTokenRepayborrow();
+        // uint256 repayresult = cTokenToBorrow.repayBorrow(borrowedAmount);
+
+        // if (repayresult != 0) revert CompoundLending_cTokenRepayborrow();
 
         // redeem
         uint256 suppliedAmount = cTokenToSupply.balanceOfUnderlying(
             address(this)
         );
 
-        uint256 result = cTokenToSupply.redeemUnderlying(suppliedAmount);
+        redeemUnderliying(address(cTokenToSupply), suppliedAmount);
 
-        if (result != 0) revert CompoundLending_cTokenRedeem();
+        // uint256 result = cTokenToSupply.redeemUnderlying(suppliedAmount);
+
+        // if (result != 0) revert CompoundLending_cTokenRedeem();
 
         uint256 profitAmount = IERC20(cTokenToBorrow.underlying()).balanceOf(
             address(this)
@@ -174,21 +174,12 @@ contract LongPosition {
         // emit WithdrawETH(msg.sender, to, address(this).balance);
 
         // claimComp
-        comptroller.claimComp(address(this));
+        claimComp();
+        // comptroller.claimComp(address(this));
 
-        console.log(
-            "IERC20(comptroller.getCompAddress()).balanceOf(address(this))",
-            IERC20(comptroller.getCompAddress()).balanceOf(address(this))
-        );
+        uint256 bonusAmount = IERC20(getCompAddress()).balanceOf(address(this));
 
-        uint256 bonusAmount = IERC20(comptroller.getCompAddress()).balanceOf(
-            address(this)
-        );
-
-        IERC20(comptroller.getCompAddress()).safeTransfer(
-            msg.sender,
-            bonusAmount
-        );
+        IERC20(getCompAddress()).safeTransfer(msg.sender, bonusAmount);
     }
 
     // function claimComp() internal {

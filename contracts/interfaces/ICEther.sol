@@ -23,4 +23,6 @@ interface ICEther {
     function balanceOfUnderlying(address account) external returns (uint256);
 
     function exchangeRateCurrent() external returns (uint256);
+
+    function isCToken() external view returns (bool);
 }

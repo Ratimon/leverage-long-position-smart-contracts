@@ -6,6 +6,8 @@ interface ICToken {
 
     function redeem(uint256 redeemTokens) external returns (uint256);
 
+    function redeemUnderlying(uint256 redeemAmount) external returns (uint256);
+
     function borrow(uint256 borrowAmount) external returns (uint256);
 
     function repayBorrow(uint256 repayAmount) external returns (uint256);
@@ -17,4 +19,6 @@ interface ICToken {
     function balanceOf(address owner) external view returns (uint256);
 
     function underlying() external view returns (address);
+
+    function isCToken() external view returns (bool);
 }
