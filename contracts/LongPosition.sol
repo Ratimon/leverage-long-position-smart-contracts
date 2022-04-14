@@ -135,10 +135,6 @@ contract LongPosition is OracleRef {
         path[0] = address(WETH);
         path[1] = cTokenToBorrow.underlying();
 
-        // uint256 amountOut = router.swapExactETHForTokens{
-        //     value: address(this).balance
-        // }(1, path, address(this), block.timestamp)[1];
-
         router.swapExactETHForTokens{value: address(this).balance}(
             1,
             path,
@@ -168,26 +164,15 @@ contract LongPosition is OracleRef {
             address(this)
         );
 
-        console.log(
-            "IERC20(cTokenToBorrow.underlying()).balanceOf(address(this))",
-            profitAmount
-        );
-
         IERC20(cTokenToBorrow.underlying()).safeTransfer(
             msg.sender,
             profitAmount
         );
 
-        console.log("address(this).balance", address(this).balance);
-
         Address.sendValue(payable(msg.sender), address(this).balance);
         // emit WithdrawETH(msg.sender, to, address(this).balance);
 
-        // (bool success, ) = msg.sender.call{value: address(this).balance}("");
-        // require(success, "Transfer failed.");
-
         // claimComp
-        // comptroller.claimComp(msg.sender);
         comptroller.claimComp(address(this));
 
         console.log(
@@ -203,17 +188,6 @@ contract LongPosition is OracleRef {
             msg.sender,
             bonusAmount
         );
-
-        console.log(
-            "IERC20(comptroller.getCompAddress()).balanceOf(address(this))",
-            IERC20(comptroller.getCompAddress()).balanceOf(address(this))
-        );
-
-        console.log(
-            "IERC20(comptroller.getCompAddress()).balanceOf(msg.sender)",
-            IERC20(comptroller.getCompAddress()).balanceOf(msg.sender)
-        );
-        // console.log("address(this).balance", address(this).balance);
     }
 
     // function claimComp() internal {

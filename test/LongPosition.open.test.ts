@@ -17,7 +17,6 @@ const wei = web3.utils.toWei;
 const setup = deployments.createFixture(async () => {
     await deployments.fixture(['external', 'oracle', 'protocol']);
     const contracts = {
-        TokenWETH: <IERC20>await ethers.getContract('TokenWETH'),
         TokenDAI: <IERC20>await ethers.getContract('TokenDAI'),
         CEtherCompound: <ICEther>await ethers.getContract('CEtherCompound'),
         CDaiCompound: <ICToken>await ethers.getContract('CDaiCompound'),
@@ -44,7 +43,7 @@ describe('LongPosition: openPosition', function () {
 
   it("should openPosition() ", async function () {
 
-    const {accounts, users, TokenWETH,TokenDAI, CEtherCompound,CDaiCompound, LongETHPosition} = await setup();
+    const {accounts, users,TokenDAI, CEtherCompound,CDaiCompound, LongETHPosition} = await setup();
 
     await depositGas(accounts.deployer.address, 2)
 
