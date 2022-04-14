@@ -41,26 +41,53 @@ describe('LongPosition: openPosition', function () {
   const MONTH: BigNumber =  BigNumber.from(30*24 * 60 * 60);
   const YEAR: BigNumber =  BigNumber.from(365*24 * 60 * 60);
 
+  it("should not openPosition() if current position is not active ", async function () {
+
+    const {users} = await setup();
+
+    await depositGas(users[0].address, 3);
+    await depositGas(users[1].address, 3);
+
+    let options = {value: parseEther("1.0")};
+    await (users[0].LongETHPosition as LongPosition).openPosition(options);
+
+    options = {value: parseEther("1.5")};
+    await expect( 
+
+      (users[1].LongETHPosition as LongPosition).openPosition(options)
+
+    ).to.be.revertedWith("position is already active");
+
+    options = {value: parseEther("1.5")};
+    await expect( 
+
+      (users[0].LongETHPosition as LongPosition).openPosition(options)
+
+    ).to.be.revertedWith("position is already active");
+
+  })
+
   it("should openPosition() ", async function () {
 
-    const {accounts, users,TokenDAI, CEtherCompound,CDaiCompound, LongETHPosition} = await setup();
+    const {accounts, users, TokenDAI, CEtherCompound,CDaiCompound, LongETHPosition} = await setup();
 
-    await depositGas(accounts.deployer.address, 2)
+    await depositGas(users[0].address, 2)
 
-    const DeployerETHBalanceBefore =  await provider.getBalance(accounts.deployer.address);
+    const UserETHBalanceBefore =  await provider.getBalance(users[0].address);
     const ETHbalanceInLongPositionBefore = await provider.getBalance(LongETHPosition.address);
 
+
     let options = {value: parseEther("1.0")}
+    await (users[0].LongETHPosition as LongPosition).openPosition(options)
 
-    await (accounts.deployer.LongETHPosition as LongPosition).openPosition(options)
 
-    const DeployerETHBalanceAfter =  await provider.getBalance(accounts.deployer.address);
+    const UserETHBalanceAfter =  await provider.getBalance(users[0].address);
     const ETHbalanceInLongPositionAfter = await provider.getBalance(LongETHPosition.address);
 
     const leverage =  await LongETHPosition.leverage()
     const BASIS_POINTS_GRANULARITY =  await LongETHPosition.BASIS_POINTS_GRANULARITY()
 
-    const DepositedETHBalance = DeployerETHBalanceBefore.sub(DeployerETHBalanceAfter)
+    const DepositedETHBalance = UserETHBalanceBefore.sub(UserETHBalanceAfter)
 
     const borrowedAmountInETH = DepositedETHBalance.mul(leverage)
       .div(BASIS_POINTS_GRANULARITY)
@@ -77,6 +104,9 @@ describe('LongPosition: openPosition', function () {
       .to.closeTo(parseFloat(formatUnits(borrowedAmountInETH.toString(),16)),0.1)
 
   })
+
+
+
 
 
 

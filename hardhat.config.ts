@@ -93,13 +93,13 @@ const config: HardhatUserConfig = {
     dai: {
       31337: "0x6B175474E89094C44Da98b954EedeAC495271d0F",  //Mapped from https://etherscan.io/token/0x6b175474e89094c44da98b954eedeac495271d0f
       1: "0x6B175474E89094C44Da98b954EedeAC495271d0F",
-      4: "0x0000000000000000000000000000000000000000", 
+      4: "0x5592EC0cfb4dbc12D3aB100b257153436a1f0FEa",  //Mapped from https://rinkeby.etherscan.io/address/0x5592ec0cfb4dbc12d3ab100b257153436a1f0fea
     },
 
     comp: {
       31337: "0xc00e94cb662c3520282e6f5717214004a7f26888",  //Mapped fromhttps://compound.finance/docs
       1: "0xc00e94cb662c3520282e6f5717214004a7f26888",
-      4: "0x0000000000000000000000000000000000000000", 
+      4: "0x0000000000000000000000000000000000000000",   
     },
 
     

@@ -32,6 +32,17 @@ contract LongPosition is Pausable, CompoundBase {
     ICEther public cTokenToSupply;
     ICToken public cTokenToBorrow;
 
+    struct Position {
+        uint256 id;
+        address owner;
+        bool isActive;
+        uint256 depositAmount;
+        uint256 borrowAmount;
+    }
+
+    mapping(uint256 => Position) positions;
+    uint256 currentPosionId = 1;
+
     constructor(
         address _comptroller,
         address _cEther,
@@ -61,28 +72,47 @@ contract LongPosition is Pausable, CompoundBase {
     receive() external payable {}
 
     function openPosition() external payable whenNotPaused returns (uint256) {
-        //supply
         // sanity check
+
+        Position storage currentPosition = positions[currentPosionId];
+        // positions[nextPosionId] = currentPosition;
+
+        require(
+            currentPosition.isActive == false,
+            "position is already active"
+        );
+
+        currentPosition.isActive = true;
+
+        // require(
+        //     currentPosionId == currentPosition.id,
+        //     "the previous position hasnt been closed"
+        // );
+
+        currentPosition.id = currentPosionId;
+        currentPosition.owner = msg.sender;
+
+        //supply
         uint256 amountToSupply = msg.value;
+        currentPosition.depositAmount = amountToSupply;
         supply(address(cTokenToSupply), amountToSupply);
 
+        //borrow
         supplyOracle.updateOracle();
         uint256 usdValueIncollateral = supplyOracle
             .readOracle()
             .mul(amountToSupply)
             .asUint256();
         Decimal.D256 memory maxLeverage = getMaxLeverage();
-
         uint256 amountToBorrow = maxLeverage
             .mul(usdValueIncollateral)
             .asUint256();
-
-        ////
-
         enterMarket(address(cTokenToSupply));
-
-        //borrow
         borrowOracle.updateOracle();
+        uint256 maxBorrowAmount = getMaxBorrowAmount();
+        if (amountToBorrow > maxBorrowAmount) amountToBorrow = maxBorrowAmount;
+        currentPosition.borrowAmount = amountToBorrow;
+
         borrow(address(cTokenToBorrow), amountToBorrow);
 
         //buy ETH
@@ -98,10 +128,33 @@ contract LongPosition is Pausable, CompoundBase {
             block.timestamp
         )[1];
 
+        // currentPosionId++;
+
         return amountOut;
     }
 
     function closePosition() external whenNotPaused {
+        Position storage currentPosition = positions[currentPosionId];
+
+        require(
+            currentPosition.isActive == true,
+            "current position must be active"
+        );
+
+        currentPosition.isActive = false;
+
+        require(
+            currentPosition.owner == msg.sender,
+            "only position owner can withdraw"
+        );
+
+        // require(
+        //     currentPosionId == currentPosition.id,
+        //     "the position has closed"
+        // );
+
+        currentPosionId++;
+
         // sell ETH
         address[] memory path = new address[](2);
         path[0] = address(WETH);
@@ -148,7 +201,7 @@ contract LongPosition is Pausable, CompoundBase {
     // function _openPosition() internal {
     // }
 
-    function getMaxBorrowAmount() external view returns (uint256) {
+    function getMaxBorrowAmount() public view returns (uint256) {
         uint256 liquidity = getAccountLiquidity();
 
         // (DAI per USD) x (USD per ETH)
