@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import {expect} from './chai-setup';
 import {ethers, web3, waffle, deployments, getUnnamedAccounts} from 'hardhat';
-import {IERC20, ChainlinkOracleWrapper, ICToken, ICEther, LongPosition} from '../typechain';
+import {IERC20, ChainlinkOracleWrapper,IUniswapV2Router, ICToken, ICEther,IComptroller, LongPosition} from '../typechain';
 import * as hre from 'hardhat';
 import {BigNumber, BigNumberish, ContractTransaction, constants, utils} from 'ethers';
 // @ts-ignore
@@ -19,6 +19,8 @@ const setup = deployments.createFixture(async () => {
     const contracts = {
         TokenWETH: <IERC20>await ethers.getContract('TokenWETH'),
         TokenDAI: <IERC20>await ethers.getContract('TokenDAI'),
+        RouterUniswap: <IUniswapV2Router>await ethers.getContract('RouterUniswap'),
+        OracleChainlinkWrapper_USD_per_ETH: <ChainlinkOracleWrapper>await ethers.getContract('OracleChainlinkWrapper_USD_per_ETH'),
         CEtherCompound: <ICEther>await ethers.getContract('CEtherCompound'),
         CDaiCompound: <ICToken>await ethers.getContract('CDaiCompound'),
         LongETHPosition: <LongPosition>await ethers.getContract('LongETHPosition'),
@@ -36,16 +38,45 @@ const setup = deployments.createFixture(async () => {
     };
   });
 
-describe('LongPosition: openPosition', function () {
+describe('LongPosition: closePosition', function () {
   
   const DAY: BigNumber = BigNumber.from(24 * 60 * 60);
   const MONTH: BigNumber =  BigNumber.from(30*24 * 60 * 60);
   const YEAR: BigNumber =  BigNumber.from(365*24 * 60 * 60);
 
+  let accounts : any;
+  let users : any;
+
+  let TokenWETH: IERC20;
+  let TokenDAI: IERC20;
+  let RouterUniswap: IUniswapV2Router;
+
+//   let ComptrollerCompound: IComptroller;
+  let CEtherCompound: ICEther;
+  let LongETHPosition: LongPosition;
+
+  before(async () => {
+
+    const fixture = await setup();
+
+    accounts = fixture.accounts;
+    users = fixture.users;
+
+    TokenWETH = fixture.TokenWETH;
+    TokenDAI = fixture.TokenDAI;
+    RouterUniswap = fixture.RouterUniswap;
+    // ComptrollerCompound = fixture.ComptrollerCompound;
+    CEtherCompound= fixture.CEtherCompound;
+    LongETHPosition= fixture.LongETHPosition;    
+
+
+  })
+
   it("should openPosition() ", async function () {
 
-    const {accounts, users, TokenWETH,TokenDAI, CEtherCompound,CDaiCompound, LongETHPosition} = await setup();
-
+    // at block 14518731
+    // let top3WethAddress = '0xe2008b01a2ad0a9aeea9f71ecc6a176138553a61';
+    // await setERC20Balance(top3WethAddress, accounts.deployer.address, amountToProvide, TokenWETH);
     await depositGas(accounts.deployer.address, 2)
 
     const DeployerETHBalanceBefore =  await provider.getBalance(accounts.deployer.address);
@@ -76,6 +107,34 @@ describe('LongPosition: openPosition', function () {
 
     expect(parseFloat(formatUnits(IncreaseInETHBalancePosition.toString(),16)))
       .to.closeTo(parseFloat(formatUnits(borrowedAmountInETH.toString(),16)),0.1)
+
+  })
+
+  it("should advance block time and ETH should increase", async function () {
+
+    await advanceTimeAndBlock(7*DAY.toNumber());
+
+    let amountToProvide = 500000000; //500_000_000 DAI
+
+    // at block 14518731
+    // let top3DaiAddress = '0x5D38B4e4783E34e2301A2a36c39a03c45798C4dD';
+    let top3DaiAddress = '0xE78388b4CE79068e89Bf8aA7f218eF6b9AB0e9d0';
+
+    
+    await depositGas(top3DaiAddress, 1)
+    await setERC20Balance(top3DaiAddress, users[0].address, amountToProvide, TokenDAI);
+
+    await (users[0].TokenDAI as IERC20).approve(RouterUniswap.address,"0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
+
+    await (users[0].RouterUniswap as IUniswapV2Router).swapExactTokensForETH(
+      parseEther(`${amountToProvide}`),
+      parseEther('0'),
+      [TokenDAI.address,TokenWETH.address],
+      users[0].address,
+      Date.now() + 1000 * 60 * 10,
+    )
+
+
 
   })
 
