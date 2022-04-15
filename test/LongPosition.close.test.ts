@@ -44,48 +44,6 @@ describe('LongPosition: closePosition', function () {
   const MONTH: BigNumber =  BigNumber.from(30*24 * 60 * 60);
   const YEAR: BigNumber =  BigNumber.from(365*24 * 60 * 60);
 
-  // let accounts : any;
-  // let users : any;
-
-  // let TokenWETH: IERC20;
-  // let TokenDAI: IERC20;
-  // let TokenCOMP: IERC20;
-  // let RouterUniswap: IUniswapV2Router;
-
-  // let CEtherCompound: ICEther;
-  // let LongETHPosition: LongPosition;
-
-  // before(async () => {
-
-  //   const fixture = await setup();
-
-  //   accounts = fixture.accounts;
-  //   users = fixture.users;
-
-  //   TokenWETH = fixture.TokenWETH;
-  //   TokenDAI = fixture.TokenDAI;
-  //   TokenCOMP = fixture.TokenCOMP;
-  //   RouterUniswap = fixture.RouterUniswap;
-  //   CEtherCompound= fixture.CEtherCompound;
-  //   LongETHPosition= fixture.LongETHPosition;
-      
-
-  // })
-
-  // it("should not closePosition() if  ", async function () {
-
-  //   const {users} = await setup();
-
-  //   await depositGas(users[0].address, 3);
-  //   await depositGas(users[1].address, 3);
-
-  //   let options = {value: parseEther("1.0")};
-  //   await (users[0].LongETHPosition as LongPosition).openPosition(options);
-
-
-
-  // })
-
   it("should not closePosition() if current position is not active ", async function () {
 
     const {users} = await setup();
@@ -97,7 +55,6 @@ describe('LongPosition: closePosition', function () {
       (users[1].LongETHPosition as LongPosition).closePosition()
 
     ).to.be.revertedWith("current position must be active");
-
 
 
   })
@@ -244,77 +201,13 @@ describe('LongPosition: closePosition', function () {
     const ProfitInDai = UserDaiBalanceAfter.sub(UserDaiBalanceBefore);
     const BonusInComp = UserCompBalanceAfter.sub(UserCompBalanceBefore);
 
-    console.log('ProfitInDai', formatUnits( ProfitInDai , 18))
-
+    // console.log('ProfitInDai', formatUnits( ProfitInDai , 18))
 
     expect(ProfitInDai).to.be.gt(parseEther('0'));
     expect(BonusInComp).to.be.gt(parseEther('0'));
 
 
   })
-
-  // it("should advance block time and ETH should increase", async function () {
-
-  //   await advanceTimeAndBlock(7*MONTH.toNumber());
-
-  //   let amountToProvide = 20000000; //20_000_000 DAI
-
-  //   // at block 14518731
-  //   // let top3DaiAddress = '0x5D38B4e4783E34e2301A2a36c39a03c45798C4dD';
-  //   let top3DaiAddress = '0xE78388b4CE79068e89Bf8aA7f218eF6b9AB0e9d0';
-
-  //   await depositGas(top3DaiAddress, 1)
-  //   await setERC20Balance(top3DaiAddress, users[11].address, amountToProvide, TokenDAI);
-
-  //   await (users[11].TokenDAI as IERC20).approve(RouterUniswap.address,"0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff");
-
-  //   await (users[11].RouterUniswap as IUniswapV2Router).swapExactTokensForETH(
-  //     parseEther(`${amountToProvide}`),
-  //     parseEther('0'),
-  //     [TokenDAI.address,TokenWETH.address],
-  //     users[11].address,
-  //     Date.now() + 1000 * 60 * 10,
-  //   )
-
-  // })
-
-  // it("should closePosistion", async function () {
-
-  //   const DeployerETHBalanceBefore =  await provider.getBalance(accounts.deployer.address);
-  //   const ETHbalanceInLongPositionBefore = await provider.getBalance(LongETHPosition.address);
-  //   const DeployerDaiBalanceBefore =  await TokenDAI.balanceOf(accounts.deployer.address);
-  //   const DeployerCompBalanceBefore =  await TokenCOMP.balanceOf(accounts.deployer.address);
-
-
-  //   await (accounts.deployer.LongETHPosition as LongPosition).closePosition();
-
-
-  //   const DeployerETHBalanceAfter =  await provider.getBalance(accounts.deployer.address);
-  //   const ETHbalanceInLongPositionAfter = await provider.getBalance(LongETHPosition.address);
-  //   const DeployerDaiBalanceAfter =  await TokenDAI.balanceOf(accounts.deployer.address);
-  //   const DeployerCompBalanceAfter =  await TokenCOMP.balanceOf(accounts.deployer.address);
-
-  //   const leverage =  await LongETHPosition.leverage()
-  //   const BASIS_POINTS_GRANULARITY =  await LongETHPosition.BASIS_POINTS_GRANULARITY()
-
-  //   const withdrawedETHBalance = DeployerETHBalanceAfter.sub(DeployerETHBalanceBefore)
-
-  //   const borrowedAmountInETH = withdrawedETHBalance.mul(leverage)
-  //     .div(BASIS_POINTS_GRANULARITY)
-
-  //   const DecreaseInETHBalancePosition = ETHbalanceInLongPositionBefore.sub(ETHbalanceInLongPositionAfter);
-
-  //   expect(parseFloat(formatUnits(DecreaseInETHBalancePosition.toString(),16)))
-  //     .to.closeTo(parseFloat(formatUnits(borrowedAmountInETH.toString(),16)),0.1);
-
-  //   const ProfitInDai = DeployerDaiBalanceAfter.sub(DeployerDaiBalanceBefore)
-  //   const BonusInComp = DeployerCompBalanceAfter.sub(DeployerCompBalanceBefore)
-
-  //   expect(ProfitInDai).to.be.gt(parseEther('0'));
-  //   expect(BonusInComp).to.be.gt(parseEther('0'));
-
-
-  // })
 
 
 

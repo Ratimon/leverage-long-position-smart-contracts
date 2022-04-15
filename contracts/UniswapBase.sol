@@ -2,7 +2,6 @@
 pragma solidity =0.8.13;
 
 import {IUniswapV2Router} from "./interfaces/IUniswapV2Router.sol";
-
 import {UniswapV2Library} from "./external/UniswapV2Library.sol";
 
 contract UniswapBase {
@@ -37,17 +36,6 @@ contract UniswapBase {
         address[] memory path = new address[](2);
         path[0] = router.WETH();
         path[1] = to;
-
-        // address[] memory path = new address[](2);
-        // path[0] = address(WETH);
-        // path[1] = cTokenToBorrow.underlying();
-
-        // router.swapExactETHForTokens{value: address(this).balance}(
-        //     0,
-        //     path,
-        //     address(this),
-        //     block.timestamp
-        // )[1];
 
         amountERC20Out = router.swapExactETHForTokens{value: amountIn}(
             0,

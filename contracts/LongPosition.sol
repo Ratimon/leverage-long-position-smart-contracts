@@ -14,18 +14,14 @@ import {Pausable} from "@openzeppelin/contracts/security/Pausable.sol";
 
 import {IOracle, IOracleRef, Decimal} from "./refs/OracleRef.sol";
 
-//refactor constant.sol
-
 contract LongPosition is Pausable, CompoundBase, UniswapBase {
     using Address for address;
     using Decimal for Decimal.D256;
     using SafeERC20 for IERC20;
 
     IWETH9 immutable WETH;
-    // IUniswapV2Router immutable router;
     uint256 public immutable BASIS_POINTS_GRANULARITY = 10_000;
     uint256 public immutable leverage = 3_000;
-    // uint256 private immutable MAX = ~uint256(0);
 
     IOracleRef public borrowOracle;
     IOracleRef public supplyOracle;
@@ -137,11 +133,8 @@ contract LongPosition is Pausable, CompoundBase, UniswapBase {
             uint256 leverageAmount
         )
     {
-        // Position storage currentPosition = positions[currentPosionId];
-
         //supply
         supplyAmount = msg.value;
-        // currentPosition.depositAmount = amountToSupply;
         supply(address(cTokenToSupply), supplyAmount);
 
         //borrow
@@ -158,27 +151,10 @@ contract LongPosition is Pausable, CompoundBase, UniswapBase {
         uint256 maxBorrowAmount = getMaxBorrowAmount();
 
         if (borrowAmount > maxBorrowAmount) borrowAmount = maxBorrowAmount;
-        // currentPosition.borrowAmount = amountToBorrow;
-
         borrow(address(cTokenToBorrow), borrowAmount);
 
         //buy ETH
         leverageAmount = buyETH(borrowAmount, cTokenToBorrow.underlying());
-        // currentPosition.leverageAmount = amountETHOut;
-
-        // address[] memory path = new address[](2);
-        // path[0] = cTokenToBorrow.underlying();
-        // path[1] = address(WETH);
-
-        // uint256 amountETHOut = router.swapExactTokensForETH(
-        //     amountToBorrow,
-        //     0,
-        //     path,
-        //     address(this),
-        //     block.timestamp
-        // )[1];
-
-        // return amountETHOut;
     }
 
     function _closePosition() private {
@@ -186,16 +162,6 @@ contract LongPosition is Pausable, CompoundBase, UniswapBase {
 
         // sell ETH
         sellETH(currentPosition.leverageAmount, cTokenToBorrow.underlying());
-        // address[] memory path = new address[](2);
-        // path[0] = address(WETH);
-        // path[1] = cTokenToBorrow.underlying();
-
-        // router.swapExactETHForTokens{value: currentPosition.leverageAmount}(
-        //     0,
-        //     path,
-        //     address(this),
-        //     block.timestamp
-        // )[1];
 
         // repay borrow
         uint256 borrowedAmount = cTokenToBorrow.borrowBalanceCurrent(
@@ -236,8 +202,6 @@ contract LongPosition is Pausable, CompoundBase, UniswapBase {
             .readOracle()
             .mul(liquidity)
             .asUint256();
-        //hardcode decimal
-        // uint256 maxBorrow = (liquidity * (10**18)) / price;
 
         return maxAmountInBorrowedToken;
     }
@@ -248,18 +212,23 @@ contract LongPosition is Pausable, CompoundBase, UniswapBase {
         return Decimal.ratio(leverage, granularity);
     }
 
-    // function getCurrentDepositAmount() external view returns (uint256) {
-    //     Position memory currentPosition = positions[currentPosionId];
-    //     return currentPosition.depositAmount;
-    // }
+    function getCurrentDepositAmount() external view returns (uint256) {
+        Position memory currentPosition = positions[currentPosionId];
+        return currentPosition.depositAmount;
+    }
 
-    // function getCurrentBorrowAmount() external view returns (uint256) {
-    //     Position memory currentPosition = positions[currentPosionId];
-    //     return currentPosition.borrowAmount;
-    // }
+    function getCurrentBorrowAmount() external view returns (uint256) {
+        Position memory currentPosition = positions[currentPosionId];
+        return currentPosition.borrowAmount;
+    }
 
-    // function getCurrentLeveragAmount() external view returns (uint256) {
+    function getCurrentLeverageAmount() external view returns (uint256) {
+        Position memory currentPosition = positions[currentPosionId];
+        return currentPosition.leverageAmount;
+    }
+
+    // function getTotalExposure() external view returns (uint256) {
     //     Position memory currentPosition = positions[currentPosionId];
-    //     return currentPosition.leverageAmount;
+    //     return currentPosition.depositAmount + currentPosition.leverageAmount;
     // }
 }

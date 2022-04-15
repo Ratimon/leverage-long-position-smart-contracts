@@ -21,8 +21,6 @@ contract CompoundBase {
     IComptroller public immutable comptroller;
     ICEther public immutable cEther;
 
-    //sanity
-
     constructor(address _comptroller, address _cEther) {
         require(
             _comptroller != address(0) && _cEther != address(0),
