@@ -24,6 +24,10 @@ contract CompoundBase {
     //sanity
 
     constructor(address _comptroller, address _cEther) {
+        require(
+            _comptroller != address(0) && _cEther != address(0),
+            "account cannot be the zero address"
+        );
         comptroller = IComptroller(_comptroller);
         cEther = ICEther(_cEther);
     }

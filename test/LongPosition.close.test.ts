@@ -241,8 +241,11 @@ describe('LongPosition: closePosition', function () {
     expect(parseFloat(formatUnits(DecreaseInETHBalancePosition.toString(),16)))
       .to.closeTo(parseFloat(formatUnits(borrowedAmountInETH.toString(),16)),0.1);
 
-    const ProfitInDai = UserDaiBalanceAfter.sub(UserDaiBalanceBefore)
-    const BonusInComp = UserCompBalanceAfter.sub(UserCompBalanceBefore)
+    const ProfitInDai = UserDaiBalanceAfter.sub(UserDaiBalanceBefore);
+    const BonusInComp = UserCompBalanceAfter.sub(UserCompBalanceBefore);
+
+    console.log('ProfitInDai', formatUnits( ProfitInDai , 18))
+
 
     expect(ProfitInDai).to.be.gt(parseEther('0'));
     expect(BonusInComp).to.be.gt(parseEther('0'));

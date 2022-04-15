@@ -6,6 +6,7 @@ import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IWETH9} from "./interfaces/IWETH9.sol";
 import {IUniswapV2Router} from "./interfaces/IUniswapV2Router.sol";
 import {ICEther, ICToken, CompoundBase} from "./CompoundBase.sol";
+import {UniswapBase} from "./UniswapBase.sol";
 
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
@@ -15,13 +16,13 @@ import {IOracle, IOracleRef, Decimal} from "./refs/OracleRef.sol";
 
 //refactor constant.sol
 
-contract LongPosition is Pausable, CompoundBase {
+contract LongPosition is Pausable, CompoundBase, UniswapBase {
     using Address for address;
     using Decimal for Decimal.D256;
     using SafeERC20 for IERC20;
 
     IWETH9 immutable WETH;
-    IUniswapV2Router immutable router;
+    // IUniswapV2Router immutable router;
     uint256 public immutable BASIS_POINTS_GRANULARITY = 10_000;
     uint256 public immutable leverage = 3_000;
     // uint256 private immutable MAX = ~uint256(0);
@@ -38,6 +39,7 @@ contract LongPosition is Pausable, CompoundBase {
         bool isActive;
         uint256 depositAmount;
         uint256 borrowAmount;
+        uint256 leverageAmount;
     }
 
     mapping(uint256 => Position) positions;
@@ -52,12 +54,9 @@ contract LongPosition is Pausable, CompoundBase {
         address _supplyOracle,
         address _cTokenToSupply,
         address _cTokenToBorrow
-    ) CompoundBase(_comptroller, _cEther) {
+    ) CompoundBase(_comptroller, _cEther) UniswapBase(_router) {
         require(
             _weth != address(0) &&
-                _router != address(0) &&
-                _comptroller != address(0) &&
-                _cEther != address(0) &&
                 _borrowOracle != address(0) &&
                 _supplyOracle != address(0) &&
                 _cTokenToSupply != address(0) &&
@@ -65,7 +64,6 @@ contract LongPosition is Pausable, CompoundBase {
             "account cannot be the zero address"
         );
         WETH = IWETH9(_weth);
-        router = IUniswapV2Router(_router);
         borrowOracle = IOracleRef(_borrowOracle);
         supplyOracle = IOracleRef(_supplyOracle);
         cTokenToSupply = ICEther(_cTokenToSupply);
@@ -95,8 +93,17 @@ contract LongPosition is Pausable, CompoundBase {
         currentPosition.id = currentPosionId;
         currentPosition.owner = msg.sender;
 
-        uint256 amountETHOut = _openPosition();
-        return amountETHOut;
+        (
+            uint256 supplyAmount,
+            uint256 borrowAmount,
+            uint256 leverageAmount
+        ) = _openPosition();
+
+        currentPosition.depositAmount = supplyAmount;
+        currentPosition.borrowAmount = borrowAmount;
+        currentPosition.leverageAmount = leverageAmount;
+
+        return leverageAmount;
     }
 
     function closePosition() external whenNotPaused {
@@ -114,65 +121,81 @@ contract LongPosition is Pausable, CompoundBase {
             "only position owner can withdraw"
         );
 
-        currentPosionId++;
+        currentPosition.depositAmount = 0;
+        currentPosition.borrowAmount = 0;
 
         _closePosition();
+        currentPosition.leverageAmount = 0;
+        currentPosionId++;
     }
 
-    function _openPosition() private returns (uint256) {
-        Position storage currentPosition = positions[currentPosionId];
+    function _openPosition()
+        private
+        returns (
+            uint256 supplyAmount,
+            uint256 borrowAmount,
+            uint256 leverageAmount
+        )
+    {
+        // Position storage currentPosition = positions[currentPosionId];
 
         //supply
-        uint256 amountToSupply = msg.value;
-        currentPosition.depositAmount = amountToSupply;
-        supply(address(cTokenToSupply), amountToSupply);
+        supplyAmount = msg.value;
+        // currentPosition.depositAmount = amountToSupply;
+        supply(address(cTokenToSupply), supplyAmount);
 
         //borrow
         supplyOracle.updateOracle();
         uint256 usdValueIncollateral = supplyOracle
             .readOracle()
-            .mul(amountToSupply)
+            .mul(supplyAmount)
             .asUint256();
         Decimal.D256 memory maxLeverage = getMaxLeverage();
-        uint256 amountToBorrow = maxLeverage
-            .mul(usdValueIncollateral)
-            .asUint256();
+        borrowAmount = maxLeverage.mul(usdValueIncollateral).asUint256();
+
         enterMarket(address(cTokenToSupply));
         borrowOracle.updateOracle();
         uint256 maxBorrowAmount = getMaxBorrowAmount();
-        if (amountToBorrow > maxBorrowAmount) amountToBorrow = maxBorrowAmount;
-        currentPosition.borrowAmount = amountToBorrow;
 
-        borrow(address(cTokenToBorrow), amountToBorrow);
+        if (borrowAmount > maxBorrowAmount) borrowAmount = maxBorrowAmount;
+        // currentPosition.borrowAmount = amountToBorrow;
+
+        borrow(address(cTokenToBorrow), borrowAmount);
 
         //buy ETH
-        address[] memory path = new address[](2);
-        path[0] = cTokenToBorrow.underlying();
-        path[1] = address(WETH);
+        leverageAmount = buyETH(borrowAmount, cTokenToBorrow.underlying());
+        // currentPosition.leverageAmount = amountETHOut;
 
-        uint256 amountETHOut = router.swapExactTokensForETH(
-            amountToBorrow,
-            0,
-            path,
-            address(this),
-            block.timestamp
-        )[1];
+        // address[] memory path = new address[](2);
+        // path[0] = cTokenToBorrow.underlying();
+        // path[1] = address(WETH);
 
-        return amountETHOut;
+        // uint256 amountETHOut = router.swapExactTokensForETH(
+        //     amountToBorrow,
+        //     0,
+        //     path,
+        //     address(this),
+        //     block.timestamp
+        // )[1];
+
+        // return amountETHOut;
     }
 
     function _closePosition() private {
-        // sell ETH
-        address[] memory path = new address[](2);
-        path[0] = address(WETH);
-        path[1] = cTokenToBorrow.underlying();
+        Position memory currentPosition = positions[currentPosionId];
 
-        router.swapExactETHForTokens{value: address(this).balance}(
-            1,
-            path,
-            address(this),
-            block.timestamp
-        )[1];
+        // sell ETH
+        sellETH(currentPosition.leverageAmount, cTokenToBorrow.underlying());
+        // address[] memory path = new address[](2);
+        // path[0] = address(WETH);
+        // path[1] = cTokenToBorrow.underlying();
+
+        // router.swapExactETHForTokens{value: currentPosition.leverageAmount}(
+        //     0,
+        //     path,
+        //     address(this),
+        //     block.timestamp
+        // )[1];
 
         // repay borrow
         uint256 borrowedAmount = cTokenToBorrow.borrowBalanceCurrent(
@@ -224,4 +247,19 @@ contract LongPosition is Pausable, CompoundBase {
         // uint256 granularity = Constants.BASIS_POINTS_GRANULARITY;
         return Decimal.ratio(leverage, granularity);
     }
+
+    // function getCurrentDepositAmount() external view returns (uint256) {
+    //     Position memory currentPosition = positions[currentPosionId];
+    //     return currentPosition.depositAmount;
+    // }
+
+    // function getCurrentBorrowAmount() external view returns (uint256) {
+    //     Position memory currentPosition = positions[currentPosionId];
+    //     return currentPosition.borrowAmount;
+    // }
+
+    // function getCurrentLeveragAmount() external view returns (uint256) {
+    //     Position memory currentPosition = positions[currentPosionId];
+    //     return currentPosition.leverageAmount;
+    // }
 }

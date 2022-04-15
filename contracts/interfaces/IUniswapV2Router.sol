@@ -2,6 +2,10 @@
 pragma solidity =0.8.13;
 
 interface IUniswapV2Router {
+    function WETH() external pure returns (address);
+
+    function factory() external pure returns (address);
+
     function getAmountsOut(uint256 amountIn, address[] memory path)
         external
         view
