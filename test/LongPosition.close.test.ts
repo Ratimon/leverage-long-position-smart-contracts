@@ -138,9 +138,11 @@ describe('LongPosition: closePosition', function () {
     let amountToProvide = 20000000; //20_000_000 DAI
   
     // at block 14518731
-    // let top3DaiAddress = '0x5D38B4e4783E34e2301A2a36c39a03c45798C4dD';
-    let top3DaiAddress = '0xE78388b4CE79068e89Bf8aA7f218eF6b9AB0e9d0';
-  
+    let top3DaiAddress = '0xE78388b4CE79068e89Bf8aA7f218eF6b9AB0e9d0'; // mainnet
+    // at block 9518731
+    // let top3DaiAddress = '0xcea4e535d03086dbaa04c71675129654e92cc055'; // rinkedby
+
+    
     await depositGas(top3DaiAddress, 1)
     await setERC20Balance(top3DaiAddress, users[11].address, amountToProvide, TokenDAI);
   
@@ -190,8 +192,10 @@ describe('LongPosition: closePosition', function () {
     let amountToProvide = 20000000; //20_000_000 DAI
 
     // at block 14518731
-    // let top3DaiAddress = '0x5D38B4e4783E34e2301A2a36c39a03c45798C4dD';
-    let top3DaiAddress = '0xE78388b4CE79068e89Bf8aA7f218eF6b9AB0e9d0';
+    let top3DaiAddress = '0x5D38B4e4783E34e2301A2a36c39a03c45798C4dD';
+    // let top3DaiAddress = '0xE78388b4CE79068e89Bf8aA7f218eF6b9AB0e9d0';
+        // at block 9518731
+    // let top3DaiAddress = '0xcea4e535d03086dbaa04c71675129654e92cc055'; // rinkedby
 
     await depositGas(top3DaiAddress, 1)
     await setERC20Balance(top3DaiAddress, users[11].address, amountToProvide, TokenDAI);

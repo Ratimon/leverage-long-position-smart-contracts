@@ -131,10 +131,6 @@ contract CompoundBase {
 
         if (liquidity == 0) revert Compound_comptrollerAccountLiquidityZero();
 
-        // require(error == 0, "error");
-        // require(shortfall == 0, "shortfall > 0");
-        // require(liquidity > 0, "liquidity = 0");
-
         return liquidity;
     }
 }

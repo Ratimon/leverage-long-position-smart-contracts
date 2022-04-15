@@ -39,7 +39,8 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     log(chalk.yellow(`Network Name: ${network.name}`));
     log("----------------------------------------------------");
     
-
+    let wethAddress;
+    let routerAddress;
     let comptrollerAddress;
     let cEtherAddress;
     let borrowOracleAddress;
@@ -47,6 +48,8 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     let cTokenToSupplyAddress;
     let cTokenToBorrowAddress
 
+    wethAddress = (await get('TokenWETH')).address;
+    routerAddress = (await get('RouterUniswap')).address;
     comptrollerAddress = (await get('ComptrollerCompound')).address;
     cEtherAddress = (await get('CEtherCompound')).address;
     borrowOracleAddress = (await get('OraclePriceDAI')).address;
@@ -57,6 +60,8 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     
     const  Args : {[key: string]: any} = {};
 
+    Args[`WETH`] = wethAddress;
+    Args[`router`] = routerAddress;
     Args[`comptroller`] = comptrollerAddress;
     Args[`cEther`] = cEtherAddress;
     Args[`borrowOracle`] = borrowOracleAddress;

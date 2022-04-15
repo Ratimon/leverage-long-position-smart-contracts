@@ -44,6 +44,8 @@ contract LongPosition is Pausable, CompoundBase {
     uint256 currentPosionId = 1;
 
     constructor(
+        address _weth,
+        address _router,
         address _comptroller,
         address _cEther,
         address _borrowOracle,
@@ -51,10 +53,10 @@ contract LongPosition is Pausable, CompoundBase {
         address _cTokenToSupply,
         address _cTokenToBorrow
     ) CompoundBase(_comptroller, _cEther) {
+        WETH = IWETH9(_weth);
+        router = IUniswapV2Router(_router);
         borrowOracle = IOracleRef(_borrowOracle);
         supplyOracle = IOracleRef(_supplyOracle);
-        WETH = IWETH9(0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2);
-        router = IUniswapV2Router(0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D);
         cTokenToSupply = ICEther(_cTokenToSupply);
         require(cTokenToSupply.isCToken(), "Not a cToken");
         cTokenToBorrow = ICToken(_cTokenToBorrow);
@@ -75,22 +77,40 @@ contract LongPosition is Pausable, CompoundBase {
         // sanity check
 
         Position storage currentPosition = positions[currentPosionId];
-        // positions[nextPosionId] = currentPosition;
-
         require(
             currentPosition.isActive == false,
             "position is already active"
         );
-
         currentPosition.isActive = true;
-
-        // require(
-        //     currentPosionId == currentPosition.id,
-        //     "the previous position hasnt been closed"
-        // );
-
         currentPosition.id = currentPosionId;
         currentPosition.owner = msg.sender;
+
+        uint256 amountETHOut = _openPosition();
+        return amountETHOut;
+    }
+
+    function closePosition() external whenNotPaused {
+        Position storage currentPosition = positions[currentPosionId];
+
+        require(
+            currentPosition.isActive == true,
+            "current position must be active"
+        );
+
+        currentPosition.isActive = false;
+
+        require(
+            currentPosition.owner == msg.sender,
+            "only position owner can withdraw"
+        );
+
+        currentPosionId++;
+
+        _closePosition();
+    }
+
+    function _openPosition() private returns (uint256) {
+        Position storage currentPosition = positions[currentPosionId];
 
         //supply
         uint256 amountToSupply = msg.value;
@@ -120,7 +140,7 @@ contract LongPosition is Pausable, CompoundBase {
         path[0] = cTokenToBorrow.underlying();
         path[1] = address(WETH);
 
-        uint256 amountOut = router.swapExactTokensForETH(
+        uint256 amountETHOut = router.swapExactTokensForETH(
             amountToBorrow,
             0,
             path,
@@ -128,33 +148,10 @@ contract LongPosition is Pausable, CompoundBase {
             block.timestamp
         )[1];
 
-        // currentPosionId++;
-
-        return amountOut;
+        return amountETHOut;
     }
 
-    function closePosition() external whenNotPaused {
-        Position storage currentPosition = positions[currentPosionId];
-
-        require(
-            currentPosition.isActive == true,
-            "current position must be active"
-        );
-
-        currentPosition.isActive = false;
-
-        require(
-            currentPosition.owner == msg.sender,
-            "only position owner can withdraw"
-        );
-
-        // require(
-        //     currentPosionId == currentPosition.id,
-        //     "the position has closed"
-        // );
-
-        currentPosionId++;
-
+    function _closePosition() private {
         // sell ETH
         address[] memory path = new address[](2);
         path[0] = address(WETH);
@@ -198,9 +195,6 @@ contract LongPosition is Pausable, CompoundBase {
         IERC20(getCompAddress()).safeTransfer(msg.sender, bonusAmount);
     }
 
-    // function _openPosition() internal {
-    // }
-
     function getMaxBorrowAmount() public view returns (uint256) {
         uint256 liquidity = getAccountLiquidity();
 
@@ -220,17 +214,4 @@ contract LongPosition is Pausable, CompoundBase {
         // uint256 granularity = Constants.BASIS_POINTS_GRANULARITY;
         return Decimal.ratio(leverage, granularity);
     }
-
-    // function atLeverageLevel() public view override returns (bool) {
-    //     return totalPurchased >= scale;
-    // }
-
-    // function getBorrowAmount(uint256 amountIn)
-    //     public
-    //     view
-    //     override
-    //     returns (
-    //         uint256 amountOut
-    //     )
-    // {}
 }

@@ -42,9 +42,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     log("----------------------------------------------------");    
 
     const  OracleArgs : {[key: string]: any} = {};
-    // const coreAddress = (await get('CoreProtocol')).address;
     
-    // OracleArgs[`core`] = coreAddress;
     const mockOracle = await getOrNull('OracleChainlinkMock_USD_per_ETH');
 
 

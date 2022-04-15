@@ -135,34 +135,39 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 export default func;
 func.tags = ["0-2-1-05B", "0-2-2","mock-lp", "external"];
 func.dependencies = ["0-2-2-04"];
-func.skip = async function (hre: HardhatRuntimeEnvironment) {
+
+func.skip = async () => true;
+
+
+// func.skip = async function (hre: HardhatRuntimeEnvironment) {
 
 
 
   
-    // not use for mainnet fork,  generate hardhat, generate local host,
-    //1) mainnet fork test    hre.network.name == 'hardhat' && isMainnetForking == true
-    //2) generate local host  hre.network.name == 'localhost' && isMainnetForking == true
-    //3) production           hre.network.name == 'bscMainnet' && isMainnetForking == false
+//     // not use for mainnet fork,  generate hardhat, generate local host, testnet
+//     //1) mainnet fork test    hre.network.name == 'hardhat' && isMainnetForking == true
+//     //2) generate local host  hre.network.name == 'localhost' && isMainnetForking == true
+//     //3) production           hre.network.name == 'bscMainnet' && isMainnetForking == false
+//     //4) testnet              hre.network.name == 'bscTestnet' && isMainnetForking == false
 
-    //use for testnet, generate hardhat, unit test
-    //1) generate hardhat     hre.network.name == 'hardhat' && isMainnetForking == false
-    //2) unit test            hre.network.name == 'hardhat' && isMainnetForking == false
-    //3) testnet              hre.network.name == 'bscTestnet' && isMainnetForking == false
+
+//     //use for testnet, generate hardhat, unit test
+//     //1) generate hardhat     hre.network.name == 'hardhat' && isMainnetForking == false
+//     //2) unit test            hre.network.name == 'hardhat' && isMainnetForking == false
 
   
-    const isForking = process.env.HARDHAT_FORK == undefined ? false: true
+//     const isForking = process.env.HARDHAT_FORK == undefined ? false: true
   
   
-    if( (hre.network.name == 'hardhat' && isForking)
-       || (hre.network.name == 'localhost' && isForking) 
-       || (hre.network.name == 'bscmainnet' && !isForking)
-       || (hre.network.name == 'mainnet' && !isForking)
-
-       ){
-          return true;
-      } else{
-          return false;
-      }
+//     if( (hre.network.name == 'hardhat' && isForking)
+//        || (hre.network.name == 'localhost' && isForking) 
+//        || (hre.network.name == 'bscmainnet' && !isForking)
+//        || (hre.network.name == 'mainnet' && !isForking)
+//        || (hre.network.name == 'rinkeby' && !isForking) 
+//        ){
+//           return true;
+//       } else{
+//           return false;
+//       }
   
-  };
+//   };

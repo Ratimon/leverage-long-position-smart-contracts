@@ -101,23 +101,26 @@ func.tags = ["0-1-01","0-1","weth","token",'external'];
 func.skip = async function (hre: HardhatRuntimeEnvironment) {
 
 
-  //not use for mainnet fork test,generate local host, or production
+  //not use for mainnet fork test,generate local host, or production testnet
   
   //1) mainnet fork test    hre.network.name == 'hardhat' && isMainnetForking == true
   //2) generate local host  hre.network.name == 'localhost' && isMainnetForking == true
   //3) production           hre.network.name == 'bscMainnet' && isMainnetForking == false
+  //4) testnet              hre.network.name == 'bscTestnet' && isMainnetForking == false
 
-  //use for testnet, generate hardhat, unit test
-  //1) testnet              hre.network.name == 'bscTestnet' && isMainnetForking == false
-  //2) generate hardhat     hre.network.name == 'hardhat' && isMainnetForking == false
-  //3) unit test            hre.network.name == 'hardhat' && isMainnetForking == false
+
+  //use for generate hardhat, unit test
+  //1) generate hardhat     hre.network.name == 'hardhat' && isMainnetForking == false
+  //2) unit test            hre.network.name == 'hardhat' && isMainnetForking == false
 
   let isForking = process.env.HARDHAT_FORK == undefined ? false: true
 
 
   if( (hre.network.name == 'hardhat' && isForking)
-     || (hre.network.name == 'localhost' && isForking) 
-     || (hre.network.name == 'bscmainnet' && !isForking) ){
+     || (hre.network.name == 'localhost' && isForking)
+     || (hre.network.name == 'mainnet' && !isForking)  
+     || (hre.network.name == 'bscmainnet' && !isForking) 
+     || (hre.network.name == 'rinkeby' && !isForking) ){
         return true;
     } else{
         return false;
