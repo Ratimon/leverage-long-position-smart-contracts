@@ -168,6 +168,15 @@ describe('LongPosition: closePosition', function () {
     )
 
 
+    const totalExposure =  await LongETHPosition.getTotalExposure();
+    const expectedUniSwapOutput =  await LongETHPosition.getExpectedUniSwapOutput();
+    const expectedProfitInUsd =  await LongETHPosition.getExpectedProfitInUsd();
+
+    
+    console.log('totalExposure', formatUnits( totalExposure , 18));
+    console.log('expectedUniSwapOutput', formatUnits( expectedUniSwapOutput , 18));
+    console.log('expectedProfitInUsd', formatUnits( expectedProfitInUsd , 18));
+
 
     //////////////////////////////ClosePosition
 
@@ -201,10 +210,16 @@ describe('LongPosition: closePosition', function () {
     const ProfitInDai = UserDaiBalanceAfter.sub(UserDaiBalanceBefore);
     const BonusInComp = UserCompBalanceAfter.sub(UserCompBalanceBefore);
 
+    // console.log('withdrawedETHBalance', formatUnits( withdrawedETHBalance , 18))
+    // console.log('DecreaseInETHBalancePosition', formatUnits( DecreaseInETHBalancePosition , 18))
     // console.log('ProfitInDai', formatUnits( ProfitInDai , 18))
 
-    expect(ProfitInDai).to.be.gt(parseEther('0'));
+    //adjusted for gas
+    expect(withdrawedETHBalance.add(DecreaseInETHBalancePosition)).to.be.closeTo(totalExposure,5000000000000000)
+    expect(ProfitInDai).to.be.closeTo(expectedProfitInUsd,200000000000000);
+    // expect(ProfitInDai).to.be.gt(parseEther('0'));
     expect(BonusInComp).to.be.gt(parseEther('0'));
+
 
 
   })

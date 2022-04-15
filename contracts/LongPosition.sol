@@ -251,7 +251,7 @@ contract LongPosition is Pausable, CompoundBase, UniswapBase {
 
         uint256 amountToReceieve = getExpectedUniSwapOutput();
 
-        uint256 usdValueInSale = supplyOracle
+        uint256 usdValueInSale = borrowOracle
             .readOracle()
             .mul(amountToReceieve)
             .asUint256();
