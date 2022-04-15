@@ -48,7 +48,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
     oracleAddress = (await get('OracleChainlinkWrapper_USD_per_DAI')).address;
     backupOracleAddress = (await get('OracleChainlinkWrapper_USD_per_DAI')).address;
-    isInvert = true
+    isInvert = false
 
 
     

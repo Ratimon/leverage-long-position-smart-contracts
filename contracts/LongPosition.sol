@@ -3,7 +3,6 @@ pragma solidity =0.8.13;
 
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-import {IWETH9} from "./interfaces/IWETH9.sol";
 import {IUniswapV2Router} from "./interfaces/IUniswapV2Router.sol";
 import {ICEther, ICToken, CompoundBase} from "./CompoundBase.sol";
 import {UniswapBase} from "./UniswapBase.sol";
@@ -19,7 +18,6 @@ contract LongPosition is Pausable, CompoundBase, UniswapBase {
     using Decimal for Decimal.D256;
     using SafeERC20 for IERC20;
 
-    IWETH9 immutable WETH;
     uint256 public immutable BASIS_POINTS_GRANULARITY = 10_000;
     uint256 public immutable leverage = 3_000;
 
@@ -42,7 +40,6 @@ contract LongPosition is Pausable, CompoundBase, UniswapBase {
     uint256 currentPosionId = 1;
 
     constructor(
-        address _weth,
         address _router,
         address _comptroller,
         address _cEther,
@@ -52,14 +49,12 @@ contract LongPosition is Pausable, CompoundBase, UniswapBase {
         address _cTokenToBorrow
     ) CompoundBase(_comptroller, _cEther) UniswapBase(_router) {
         require(
-            _weth != address(0) &&
-                _borrowOracle != address(0) &&
+            _borrowOracle != address(0) &&
                 _supplyOracle != address(0) &&
                 _cTokenToSupply != address(0) &&
                 _cTokenToBorrow != address(0),
             "account cannot be the zero address"
         );
-        WETH = IWETH9(_weth);
         borrowOracle = IOracleRef(_borrowOracle);
         supplyOracle = IOracleRef(_supplyOracle);
         cTokenToSupply = ICEther(_cTokenToSupply);
@@ -164,18 +159,18 @@ contract LongPosition is Pausable, CompoundBase, UniswapBase {
         sellETH(currentPosition.leverageAmount, cTokenToBorrow.underlying());
 
         // repay borrow
-        uint256 borrowedAmount = cTokenToBorrow.borrowBalanceCurrent(
+        uint256 amountToRepay = cTokenToBorrow.borrowBalanceCurrent(
             address(this)
         );
 
-        repayBorrow(address(cTokenToBorrow), borrowedAmount);
+        repayBorrow(address(cTokenToBorrow), amountToRepay);
 
         // redeem
-        uint256 suppliedAmount = cTokenToSupply.balanceOfUnderlying(
+        uint256 amountToSettled = cTokenToSupply.balanceOfUnderlying(
             address(this)
         );
 
-        redeemUnderliying(address(cTokenToSupply), suppliedAmount);
+        redeemUnderliying(address(cTokenToSupply), amountToSettled);
 
         uint256 profitAmount = IERC20(cTokenToBorrow.underlying()).balanceOf(
             address(this)
@@ -197,18 +192,19 @@ contract LongPosition is Pausable, CompoundBase, UniswapBase {
     function getMaxBorrowAmount() public view returns (uint256) {
         uint256 liquidity = getAccountLiquidity();
 
+        // (DAI per USD)
+        Decimal.D256 memory inverted = borrowOracle.invert(
+            borrowOracle.readOracle()
+        );
+
         // (DAI per USD) x (USD per ETH)
-        uint256 maxAmountInBorrowedToken = borrowOracle
-            .readOracle()
-            .mul(liquidity)
-            .asUint256();
+        uint256 maxAmountInBorrowedToken = inverted.mul(liquidity).asUint256();
 
         return maxAmountInBorrowedToken;
     }
 
     function getMaxLeverage() public pure returns (Decimal.D256 memory) {
         uint256 granularity = BASIS_POINTS_GRANULARITY;
-        // uint256 granularity = Constants.BASIS_POINTS_GRANULARITY;
         return Decimal.ratio(leverage, granularity);
     }
 
@@ -227,8 +223,43 @@ contract LongPosition is Pausable, CompoundBase, UniswapBase {
         return currentPosition.leverageAmount;
     }
 
-    // function getTotalExposure() external view returns (uint256) {
-    //     Position memory currentPosition = positions[currentPosionId];
-    //     return currentPosition.depositAmount + currentPosition.leverageAmount;
-    // }
+    function getTotalExposure() external view returns (uint256) {
+        Position memory currentPosition = positions[currentPosionId];
+        return (currentPosition.depositAmount + currentPosition.leverageAmount);
+    }
+
+    function getExpectedUniSwapOutput() public view returns (uint256) {
+        Position memory currentPosition = positions[currentPosionId];
+
+        return
+            getAmountsOut(
+                currentPosition.leverageAmount,
+                router.WETH(),
+                cTokenToBorrow.underlying()
+            );
+    }
+
+    function getExpectedProfitInUsd() external view returns (uint256) {
+        uint256 amountToRepay = cTokenToBorrow.borrowBalanceStored(
+            address(this)
+        );
+
+        uint256 usdValueInCost = borrowOracle
+            .readOracle()
+            .mul(amountToRepay)
+            .asUint256();
+
+        uint256 amountToReceieve = getExpectedUniSwapOutput();
+
+        uint256 usdValueInSale = supplyOracle
+            .readOracle()
+            .mul(amountToReceieve)
+            .asUint256();
+
+        if (usdValueInSale > usdValueInCost) {
+            return usdValueInSale - usdValueInCost;
+        } else {
+            return usdValueInCost - usdValueInSale;
+        }
+    }
 }

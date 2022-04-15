@@ -14,7 +14,10 @@ interface ICToken {
 
     function borrowBalanceCurrent(address account) external returns (uint256);
 
-    function borrowBalanceStored(address account) external returns (uint256);
+    function borrowBalanceStored(address account)
+        external
+        view
+        returns (uint256);
 
     function balanceOf(address owner) external view returns (uint256);
 

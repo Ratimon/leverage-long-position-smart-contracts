@@ -60,7 +60,6 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     
     const  Args : {[key: string]: any} = {};
 
-    Args[`WETH`] = wethAddress;
     Args[`router`] = routerAddress;
     Args[`comptroller`] = comptrollerAddress;
     Args[`cEther`] = cEtherAddress;
