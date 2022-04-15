@@ -41,6 +41,24 @@ describe('LongPosition: openPosition', function () {
   const MONTH: BigNumber =  BigNumber.from(30*24 * 60 * 60);
   const YEAR: BigNumber =  BigNumber.from(365*24 * 60 * 60);
 
+  it("should not openPosition() if no ETH is sent along ", async function () {
+
+    const {users} = await setup();
+
+    await depositGas(users[0].address, 3);
+
+
+    let options = {value: parseEther("0")};
+    await expect( 
+
+      (users[0].LongETHPosition as LongPosition).openPosition(options)
+
+    ).to.be.revertedWith("must send arbitary amount of ether along with");
+
+
+
+  })
+
   it("should not openPosition() if current position is not active ", async function () {
 
     const {users} = await setup();

@@ -53,6 +53,17 @@ contract LongPosition is Pausable, CompoundBase {
         address _cTokenToSupply,
         address _cTokenToBorrow
     ) CompoundBase(_comptroller, _cEther) {
+        require(
+            _weth != address(0) &&
+                _router != address(0) &&
+                _comptroller != address(0) &&
+                _cEther != address(0) &&
+                _borrowOracle != address(0) &&
+                _supplyOracle != address(0) &&
+                _cTokenToSupply != address(0) &&
+                _cTokenToBorrow != address(0),
+            "account cannot be the zero address"
+        );
         WETH = IWETH9(_weth);
         router = IUniswapV2Router(_router);
         borrowOracle = IOracleRef(_borrowOracle);
@@ -74,8 +85,7 @@ contract LongPosition is Pausable, CompoundBase {
     receive() external payable {}
 
     function openPosition() external payable whenNotPaused returns (uint256) {
-        // sanity check
-
+        require(msg.value > 0, "must send arbitary amount of ether along with");
         Position storage currentPosition = positions[currentPosionId];
         require(
             currentPosition.isActive == false,
