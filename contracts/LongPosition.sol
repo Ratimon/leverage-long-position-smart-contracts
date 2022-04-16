@@ -3,7 +3,6 @@ pragma solidity =0.8.13;
 
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-import {IUniswapV2Router} from "./interfaces/IUniswapV2Router.sol";
 import {ICEther, ICToken, CompoundBase} from "./CompoundBase.sol";
 import {UniswapBase} from "./UniswapBase.sol";
 
@@ -85,7 +84,6 @@ contract LongPosition is Pausable, CompoundBase, UniswapBase {
         currentPosition.owner = msg.sender;
 
         uint256 depositAmount = msg.value;
-
         currentPosition.depositAmount = depositAmount;
         _depositCollateral(depositAmount);
 
@@ -93,13 +91,6 @@ contract LongPosition is Pausable, CompoundBase, UniswapBase {
         currentPosition.borrowAmount = borrowAmount;
         _targetAndBorrow(borrowAmount);
 
-        // (
-        //     uint256 supplyAmount,
-        //     uint256 borrowAmount,
-        //     uint256 leverageAmount
-        // ) = _openPosition();
-
-        //buy ETH
         uint256 leverageAmount = buyETH(
             borrowAmount,
             cTokenToBorrow.underlying()
@@ -111,12 +102,10 @@ contract LongPosition is Pausable, CompoundBase, UniswapBase {
 
     function closePosition() external whenNotPaused {
         Position storage currentPosition = positions[currentPosionId];
-
         require(
             currentPosition.isActive == true,
             "current position must be active"
         );
-
         currentPosition.isActive = false;
 
         require(
@@ -128,45 +117,12 @@ contract LongPosition is Pausable, CompoundBase, UniswapBase {
         sellETH(currentPosition.leverageAmount, cTokenToBorrow.underlying());
 
         currentPosition.borrowAmount = 0;
-        // _closePosition();
         currentPosition.leverageAmount = 0;
         _closeLoan();
         _withdrawCapitalAndProfit();
 
         currentPosionId++;
     }
-
-    // function _openPosition()
-    //     private
-    //     returns (
-    //         uint256 supplyAmount,
-    //         uint256 borrowAmount,
-    //         uint256 leverageAmount
-    //     )
-    // {
-    //     //supply
-    //     supplyAmount = msg.value;
-    //     supply(address(cTokenToSupply), supplyAmount);
-
-    //     //borrow
-    //     supplyOracle.updateOracle();
-    //     uint256 usdValueIncollateral = supplyOracle
-    //         .readOracle()
-    //         .mul(supplyAmount)
-    //         .asUint256();
-    //     Decimal.D256 memory maxLeverage = getMaxLeverage();
-    //     borrowAmount = maxLeverage.mul(usdValueIncollateral).asUint256();
-
-    //     enterMarket(address(cTokenToSupply));
-    //     borrowOracle.updateOracle();
-    //     uint256 maxBorrowAmount = getMaxBorrowAmount();
-
-    //     if (borrowAmount > maxBorrowAmount) borrowAmount = maxBorrowAmount;
-    //     borrow(address(cTokenToBorrow), borrowAmount);
-
-    //     //buy ETH
-    //     leverageAmount = buyETH(borrowAmount, cTokenToBorrow.underlying());
-    // }
 
     function _depositCollateral(uint256 _underlyingAmount) private {
         supply(address(cTokenToSupply), _underlyingAmount);
@@ -186,7 +142,6 @@ contract LongPosition is Pausable, CompoundBase, UniswapBase {
     }
 
     function _targetAndBorrow(uint256 _underlyingAmount) private {
-        //borrow
         enterMarket(address(cTokenToSupply));
         borrowOracle.updateOracle();
         uint256 maxBorrowAmount = getMaxBorrowAmount();
@@ -195,36 +150,6 @@ contract LongPosition is Pausable, CompoundBase, UniswapBase {
             _underlyingAmount = maxBorrowAmount;
         borrow(address(cTokenToBorrow), _underlyingAmount);
     }
-
-    // function _closePosition() private {
-    //     Position memory currentPosition = positions[currentPosionId];
-
-    //     sellETH(currentPosition.leverageAmount, cTokenToBorrow.underlying());
-    //     // repay borrow
-    //     uint256 amountToRepay = cTokenToBorrow.borrowBalanceCurrent(
-    //         address(this)
-    //     );
-    //     repayBorrow(address(cTokenToBorrow), amountToRepay);
-    //     // redeem
-    //     uint256 amountToSettle = cTokenToSupply.balanceOfUnderlying(
-    //         address(this)
-    //     );
-
-    //     redeemUnderliying(address(cTokenToSupply), amountToSettle);
-
-    //     uint256 profitAmount = IERC20(cTokenToBorrow.underlying()).balanceOf(
-    //         address(this)
-    //     );
-    //     IERC20(cTokenToBorrow.underlying()).safeTransfer(
-    //         msg.sender,
-    //         profitAmount
-    //     );
-    //     Address.sendValue(payable(msg.sender), address(this).balance);
-    //     // emit WithdrawETH(msg.sender, to, address(this).balance);
-    //     claimComp();
-    //     uint256 bonusAmount = IERC20(getCompAddress()).balanceOf(address(this));
-    //     IERC20(getCompAddress()).safeTransfer(msg.sender, bonusAmount);
-    // }
 
     function _closeLoan() private {
         // repay borrow
@@ -256,15 +181,12 @@ contract LongPosition is Pausable, CompoundBase, UniswapBase {
 
     function getMaxBorrowAmount() public view returns (uint256) {
         uint256 liquidity = getAccountLiquidity();
-
         // (DAI per USD)
         Decimal.D256 memory inverted = borrowOracle.invert(
             borrowOracle.readOracle()
         );
-
         // (DAI per USD) x (USD per ETH)
         uint256 maxAmountInBorrowedToken = inverted.mul(liquidity).asUint256();
-
         return maxAmountInBorrowedToken;
     }
 
@@ -295,7 +217,6 @@ contract LongPosition is Pausable, CompoundBase, UniswapBase {
 
     function getExpectedUniSwapOutput() public view returns (uint256) {
         Position memory currentPosition = positions[currentPosionId];
-
         return
             getAmountsOut(
                 currentPosition.leverageAmount,
@@ -308,14 +229,12 @@ contract LongPosition is Pausable, CompoundBase, UniswapBase {
         uint256 amountToRepay = cTokenToBorrow.borrowBalanceStored(
             address(this)
         );
-
         uint256 usdValueInCost = borrowOracle
             .readOracle()
             .mul(amountToRepay)
             .asUint256();
 
         uint256 amountToReceieve = getExpectedUniSwapOutput();
-
         uint256 usdValueInSale = borrowOracle
             .readOracle()
             .mul(amountToReceieve)

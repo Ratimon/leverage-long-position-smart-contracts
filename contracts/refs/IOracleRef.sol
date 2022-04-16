@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
-pragma solidity ^0.8.4;
+pragma solidity =0.8.13;
 
 import "../oracle/IOracle.sol";
 
@@ -24,8 +24,6 @@ interface IOracleRef {
     // ----------- State changing API -----------
 
     function updateOracle() external;
-
-    // ----------- Governor only state changing API -----------
 
     function setOracle(address newOracle) external;
 
