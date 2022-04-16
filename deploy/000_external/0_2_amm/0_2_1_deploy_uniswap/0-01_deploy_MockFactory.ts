@@ -16,7 +16,7 @@ const {
     formatUnits,
 } = utils;
 
-import pairabi from "../../../../src/abis/external/uni-pair.json";
+import pairabi from "../../../../assets/abis/external/uni-pair.json";
 
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {

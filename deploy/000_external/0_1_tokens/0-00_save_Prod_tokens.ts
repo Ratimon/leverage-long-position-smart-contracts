@@ -8,8 +8,8 @@ import {
   DeploymentSubmission
 } from 'hardhat-deploy/types';
 
-import erc20abi from "../../../src/abis/external/erc20.json";
-import wethabi from "../../../src/abis/external/weth.json";
+import erc20abi from "../../../assets/abis/external/erc20.json";
+import wethabi from "../../../assets/abis/external/weth.json";
 
 
 import {

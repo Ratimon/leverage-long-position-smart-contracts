@@ -8,9 +8,9 @@ import {
   DeploymentSubmission
 } from 'hardhat-deploy/types';
 
-import factoryabi from "../../../src/abis/external/uni-factory.json";
-import pairabi from "../../../src/abis/external/uni-pair.json";
-import routerabi from "../../../src/abis/external/uni-router.json";
+import factoryabi from "../../../assets/abis/external/uni-factory.json";
+import pairabi from "../../../assets/abis/external/uni-pair.json";
+import routerabi from "../../../assets/abis/external/uni-router.json";
 
 
 import {

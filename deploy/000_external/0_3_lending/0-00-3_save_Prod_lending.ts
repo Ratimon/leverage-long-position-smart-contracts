@@ -8,9 +8,9 @@ import {
   DeploymentSubmission
 } from 'hardhat-deploy/types';
 
-import comptrollerabi from "../../../src/abis/external/comptroller.json";
-import cetherabi from "../../../src/abis/external/cether.json";
-import ctokenabi from "../../../src/abis/external/ctoken.json";
+import comptrollerabi from "../../../assets/abis/external/comptroller.json";
+import cetherabi from "../../../assets/abis/external/cether.json";
+import ctokenabi from "../../../assets/abis/external/ctoken.json";
 
 
 import {
