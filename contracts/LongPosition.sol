@@ -84,14 +84,26 @@ contract LongPosition is Pausable, CompoundBase, UniswapBase {
         currentPosition.id = currentPosionId;
         currentPosition.owner = msg.sender;
 
-        (
-            uint256 supplyAmount,
-            uint256 borrowAmount,
-            uint256 leverageAmount
-        ) = _openPosition();
+        uint256 depositAmount = msg.value;
 
-        currentPosition.depositAmount = supplyAmount;
+        currentPosition.depositAmount = depositAmount;
+        _depositCollateral(depositAmount);
+
+        uint256 borrowAmount = _caculateBorrowAmount(depositAmount);
         currentPosition.borrowAmount = borrowAmount;
+        _targetAndBorrow(borrowAmount);
+
+        // (
+        //     uint256 supplyAmount,
+        //     uint256 borrowAmount,
+        //     uint256 leverageAmount
+        // ) = _openPosition();
+
+        //buy ETH
+        uint256 leverageAmount = buyETH(
+            borrowAmount,
+            cTokenToBorrow.underlying()
+        );
         currentPosition.leverageAmount = leverageAmount;
 
         return leverageAmount;
@@ -113,77 +125,130 @@ contract LongPosition is Pausable, CompoundBase, UniswapBase {
         );
 
         currentPosition.depositAmount = 0;
-        currentPosition.borrowAmount = 0;
+        sellETH(currentPosition.leverageAmount, cTokenToBorrow.underlying());
 
-        _closePosition();
+        currentPosition.borrowAmount = 0;
+        // _closePosition();
         currentPosition.leverageAmount = 0;
+        _closeLoan();
+        _withdrawCapitalAndProfit();
+
         currentPosionId++;
     }
 
-    function _openPosition()
-        private
-        returns (
-            uint256 supplyAmount,
-            uint256 borrowAmount,
-            uint256 leverageAmount
-        )
-    {
-        //supply
-        supplyAmount = msg.value;
-        supply(address(cTokenToSupply), supplyAmount);
+    // function _openPosition()
+    //     private
+    //     returns (
+    //         uint256 supplyAmount,
+    //         uint256 borrowAmount,
+    //         uint256 leverageAmount
+    //     )
+    // {
+    //     //supply
+    //     supplyAmount = msg.value;
+    //     supply(address(cTokenToSupply), supplyAmount);
 
-        //borrow
+    //     //borrow
+    //     supplyOracle.updateOracle();
+    //     uint256 usdValueIncollateral = supplyOracle
+    //         .readOracle()
+    //         .mul(supplyAmount)
+    //         .asUint256();
+    //     Decimal.D256 memory maxLeverage = getMaxLeverage();
+    //     borrowAmount = maxLeverage.mul(usdValueIncollateral).asUint256();
+
+    //     enterMarket(address(cTokenToSupply));
+    //     borrowOracle.updateOracle();
+    //     uint256 maxBorrowAmount = getMaxBorrowAmount();
+
+    //     if (borrowAmount > maxBorrowAmount) borrowAmount = maxBorrowAmount;
+    //     borrow(address(cTokenToBorrow), borrowAmount);
+
+    //     //buy ETH
+    //     leverageAmount = buyETH(borrowAmount, cTokenToBorrow.underlying());
+    // }
+
+    function _depositCollateral(uint256 _underlyingAmount) private {
+        supply(address(cTokenToSupply), _underlyingAmount);
+    }
+
+    function _caculateBorrowAmount(uint256 _depositAmount)
+        private
+        returns (uint256 borrowAmount)
+    {
         supplyOracle.updateOracle();
         uint256 usdValueIncollateral = supplyOracle
             .readOracle()
-            .mul(supplyAmount)
+            .mul(_depositAmount)
             .asUint256();
         Decimal.D256 memory maxLeverage = getMaxLeverage();
         borrowAmount = maxLeverage.mul(usdValueIncollateral).asUint256();
+    }
 
+    function _targetAndBorrow(uint256 _underlyingAmount) private {
+        //borrow
         enterMarket(address(cTokenToSupply));
         borrowOracle.updateOracle();
         uint256 maxBorrowAmount = getMaxBorrowAmount();
 
-        if (borrowAmount > maxBorrowAmount) borrowAmount = maxBorrowAmount;
-        borrow(address(cTokenToBorrow), borrowAmount);
-
-        //buy ETH
-        leverageAmount = buyETH(borrowAmount, cTokenToBorrow.underlying());
+        if (_underlyingAmount > maxBorrowAmount)
+            _underlyingAmount = maxBorrowAmount;
+        borrow(address(cTokenToBorrow), _underlyingAmount);
     }
 
-    function _closePosition() private {
-        Position memory currentPosition = positions[currentPosionId];
+    // function _closePosition() private {
+    //     Position memory currentPosition = positions[currentPosionId];
 
-        // sell ETH
-        sellETH(currentPosition.leverageAmount, cTokenToBorrow.underlying());
+    //     sellETH(currentPosition.leverageAmount, cTokenToBorrow.underlying());
+    //     // repay borrow
+    //     uint256 amountToRepay = cTokenToBorrow.borrowBalanceCurrent(
+    //         address(this)
+    //     );
+    //     repayBorrow(address(cTokenToBorrow), amountToRepay);
+    //     // redeem
+    //     uint256 amountToSettle = cTokenToSupply.balanceOfUnderlying(
+    //         address(this)
+    //     );
 
+    //     redeemUnderliying(address(cTokenToSupply), amountToSettle);
+
+    //     uint256 profitAmount = IERC20(cTokenToBorrow.underlying()).balanceOf(
+    //         address(this)
+    //     );
+    //     IERC20(cTokenToBorrow.underlying()).safeTransfer(
+    //         msg.sender,
+    //         profitAmount
+    //     );
+    //     Address.sendValue(payable(msg.sender), address(this).balance);
+    //     // emit WithdrawETH(msg.sender, to, address(this).balance);
+    //     claimComp();
+    //     uint256 bonusAmount = IERC20(getCompAddress()).balanceOf(address(this));
+    //     IERC20(getCompAddress()).safeTransfer(msg.sender, bonusAmount);
+    // }
+
+    function _closeLoan() private {
         // repay borrow
         uint256 amountToRepay = cTokenToBorrow.borrowBalanceCurrent(
             address(this)
         );
-
         repayBorrow(address(cTokenToBorrow), amountToRepay);
-
         // redeem
-        uint256 amountToSettled = cTokenToSupply.balanceOfUnderlying(
+        uint256 amountToSettle = cTokenToSupply.balanceOfUnderlying(
             address(this)
         );
+        redeemUnderliying(address(cTokenToSupply), amountToSettle);
+    }
 
-        redeemUnderliying(address(cTokenToSupply), amountToSettled);
-
+    function _withdrawCapitalAndProfit() private {
         uint256 profitAmount = IERC20(cTokenToBorrow.underlying()).balanceOf(
             address(this)
         );
-
         IERC20(cTokenToBorrow.underlying()).safeTransfer(
             msg.sender,
             profitAmount
         );
-
         Address.sendValue(payable(msg.sender), address(this).balance);
         // emit WithdrawETH(msg.sender, to, address(this).balance);
-
         claimComp();
         uint256 bonusAmount = IERC20(getCompAddress()).balanceOf(address(this));
         IERC20(getCompAddress()).safeTransfer(msg.sender, bonusAmount);
