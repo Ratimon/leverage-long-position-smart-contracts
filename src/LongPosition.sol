@@ -195,6 +195,11 @@ contract LongPosition is Pausable, CompoundBase, UniswapBase {
         return Decimal.ratio(leverage, granularity);
     }
 
+    function isCurrentPositionActive() external view returns (bool) {
+        Position memory currentPosition = positions[currentPosionId];
+        return currentPosition.isActive;
+    }
+
     function getCurrentDepositAmount() external view returns (uint256) {
         Position memory currentPosition = positions[currentPosionId];
         return currentPosition.depositAmount;
@@ -223,6 +228,14 @@ contract LongPosition is Pausable, CompoundBase, UniswapBase {
                 router.WETH(),
                 cTokenToBorrow.underlying()
             );
+    }
+
+    function getCurrentETHPrice()
+        external
+        view
+        returns (uint256 currentETHPrice)
+    {
+        currentETHPrice = supplyOracle.readOracle().asUint256();
     }
 
     function getExpectedProfitInUsd() external view returns (uint256) {

@@ -167,14 +167,15 @@ describe('LongPosition: closePosition', function () {
       Date.now() + 1000 * 60 * 10,
     )
 
-
-    const totalExposure =  await LongETHPosition.getTotalExposure();
     const expectedUniSwapOutput =  await LongETHPosition.getExpectedUniSwapOutput();
+    const currentETHPrice =  await LongETHPosition.getCurrentETHPrice();
+    const totalExposure =  await LongETHPosition.getTotalExposure();
     const expectedProfitInUsd =  await LongETHPosition.getExpectedProfitInUsd();
 
-    
-    console.log('totalExposure', formatUnits( totalExposure , 18));
     console.log('expectedUniSwapOutput', formatUnits( expectedUniSwapOutput , 18));
+    console.log('currentETHPrice', formatUnits( currentETHPrice , 0));
+
+    console.log('totalExposure', formatUnits( totalExposure , 18));
     console.log('expectedProfitInUsd', formatUnits( expectedProfitInUsd , 18));
 
 
@@ -209,6 +210,12 @@ describe('LongPosition: closePosition', function () {
 
     const ProfitInDai = UserDaiBalanceAfter.sub(UserDaiBalanceBefore);
     const BonusInComp = UserCompBalanceAfter.sub(UserCompBalanceBefore);
+
+
+    const  isPoitionActive =  await LongETHPosition.isCurrentPositionActive();
+    expect(isPoitionActive).to.equal(false);
+
+
 
     // console.log('withdrawedETHBalance', formatUnits( withdrawedETHBalance , 18))
     // console.log('DecreaseInETHBalancePosition', formatUnits( DecreaseInETHBalancePosition , 18))

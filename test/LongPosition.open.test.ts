@@ -112,11 +112,17 @@ describe('LongPosition: openPosition', function () {
 
     const IncreaseInETHBalancePosition = ETHbalanceInLongPositionAfter.sub(ETHbalanceInLongPositionBefore)
 
-    console.log(`IncreaseInETHBalancePosition`, chalk.blue(formatUnits(IncreaseInETHBalancePosition)));
-    console.log(`IncreaseInETHBalancePosition parse`, chalk.blue(parseFloat(formatUnits(IncreaseInETHBalancePosition.toString(),16))));
+    const  isPoitionActive =  await LongETHPosition.isCurrentPositionActive();
 
-    console.log(`DeployerETHBalanceInvestment`, chalk.blue(formatUnits(borrowedAmountInETH)));
-    console.log(`DeployerETHBalanceInvestment parse`, chalk.blue(parseFloat(formatUnits(borrowedAmountInETH.toString(),16))));
+    expect(isPoitionActive).to.equal(true);
+
+
+
+    // console.log(`IncreaseInETHBalancePosition`, chalk.blue(formatUnits(IncreaseInETHBalancePosition)));
+    // console.log(`IncreaseInETHBalancePosition parse`, chalk.blue(parseFloat(formatUnits(IncreaseInETHBalancePosition.toString(),16))));
+
+    // console.log(`DeployerETHBalanceInvestment`, chalk.blue(formatUnits(borrowedAmountInETH)));
+    // console.log(`DeployerETHBalanceInvestment parse`, chalk.blue(parseFloat(formatUnits(borrowedAmountInETH.toString(),16))));
 
     expect(parseFloat(formatUnits(IncreaseInETHBalancePosition.toString(),16)))
       .to.closeTo(parseFloat(formatUnits(borrowedAmountInETH.toString(),16)),0.1)
