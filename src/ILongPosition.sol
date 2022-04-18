@@ -49,6 +49,8 @@ interface ILongPosition {
 
     function isCurrentPositionActive() external view returns (bool);
 
+    function getCurrentPositionOwner() external view returns (address);
+
     function getCurrentDepositAmount() external view returns (uint256);
 
     function getCurrentBorrowAmount() external view returns (uint256);

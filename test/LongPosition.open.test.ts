@@ -96,7 +96,13 @@ describe('LongPosition: openPosition', function () {
 
 
     let options = {value: parseEther("1.0")}
-    await (users[0].LongETHPosition as LongPosition).openPosition(options)
+    await (users[0].LongETHPosition as LongPosition).openPosition(options);
+
+    const  isPoitionActive =  await LongETHPosition.isCurrentPositionActive();
+    expect(isPoitionActive).to.equal(true);
+
+    const  currentPositionOwner =  await LongETHPosition.getCurrentPositionOwner();
+    expect(currentPositionOwner).to.equal(users[0].address);
 
 
     const UserETHBalanceAfter =  await provider.getBalance(users[0].address);
@@ -111,12 +117,6 @@ describe('LongPosition: openPosition', function () {
       .div(BASIS_POINTS_GRANULARITY)
 
     const IncreaseInETHBalancePosition = ETHbalanceInLongPositionAfter.sub(ETHbalanceInLongPositionBefore)
-
-    const  isPoitionActive =  await LongETHPosition.isCurrentPositionActive();
-
-    expect(isPoitionActive).to.equal(true);
-
-
 
     // console.log(`IncreaseInETHBalancePosition`, chalk.blue(formatUnits(IncreaseInETHBalancePosition)));
     // console.log(`IncreaseInETHBalancePosition parse`, chalk.blue(parseFloat(formatUnits(IncreaseInETHBalancePosition.toString(),16))));

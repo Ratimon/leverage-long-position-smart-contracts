@@ -232,6 +232,11 @@ contract LongPosition is ILongPosition, Pausable, CompoundBase, UniswapBase {
         return currentPosition.isActive;
     }
 
+    function getCurrentPositionOwner() external view returns (address) {
+        Position memory currentPosition = positions[currentPosionId];
+        return currentPosition.owner;
+    }
+
     function getCurrentDepositAmount() external view returns (uint256) {
         Position memory currentPosition = positions[currentPosionId];
         return currentPosition.depositAmount;

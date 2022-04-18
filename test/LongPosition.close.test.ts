@@ -189,6 +189,8 @@ describe('LongPosition: closePosition', function () {
 
     await (users[0].LongETHPosition as LongPosition).closePosition();
 
+    const  isPoitionActive =  await LongETHPosition.isCurrentPositionActive();
+    expect(isPoitionActive).to.equal(false);
 
     const UserETHBalanceAfter =  await provider.getBalance(users[0].address);
     const ETHbalanceInLongPositionAfter = await provider.getBalance(LongETHPosition.address);
@@ -210,12 +212,6 @@ describe('LongPosition: closePosition', function () {
 
     const ProfitInDai = UserDaiBalanceAfter.sub(UserDaiBalanceBefore);
     const BonusInComp = UserCompBalanceAfter.sub(UserCompBalanceBefore);
-
-
-    const  isPoitionActive =  await LongETHPosition.isCurrentPositionActive();
-    expect(isPoitionActive).to.equal(false);
-
-
 
     // console.log('withdrawedETHBalance', formatUnits( withdrawedETHBalance , 18))
     // console.log('DecreaseInETHBalancePosition', formatUnits( DecreaseInETHBalancePosition , 18))
