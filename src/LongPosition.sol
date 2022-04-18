@@ -2,17 +2,18 @@
 pragma solidity =0.8.13;
 
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-
 import {ICEther, ICToken, CompoundBase} from "./CompoundBase.sol";
+import {ILongPosition, Decimal} from "./ILongPosition.sol";
+
 import {UniswapBase} from "./UniswapBase.sol";
 
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {Pausable} from "@openzeppelin/contracts/security/Pausable.sol";
 
-import {IOracle, IOracleRef, Decimal} from "./refs/OracleRef.sol";
+import {IOracle, IOracleRef} from "./refs/OracleRef.sol";
 
-contract LongPosition is Pausable, CompoundBase, UniswapBase {
+contract LongPosition is ILongPosition, Pausable, CompoundBase, UniswapBase {
     using Address for address;
     using Decimal for Decimal.D256;
     using SafeERC20 for IERC20;
@@ -87,6 +88,8 @@ contract LongPosition is Pausable, CompoundBase, UniswapBase {
         currentPosition.depositAmount = depositAmount;
         _depositCollateral(depositAmount);
 
+        emit Deposit(msg.sender, msg.value);
+
         uint256 borrowAmount = _caculateBorrowAmount(depositAmount);
         currentPosition.borrowAmount = borrowAmount;
         _targetAndBorrow(borrowAmount);
@@ -97,11 +100,26 @@ contract LongPosition is Pausable, CompoundBase, UniswapBase {
         );
         currentPosition.leverageAmount = leverageAmount;
 
+        emit PositionUpdate(
+            currentPosionId,
+            msg.sender,
+            false,
+            true,
+            0,
+            msg.value,
+            0,
+            borrowAmount,
+            0,
+            leverageAmount
+        );
+
         return leverageAmount;
     }
 
     function closePosition() external whenNotPaused {
+        Position memory previousPosition = positions[currentPosionId];
         Position storage currentPosition = positions[currentPosionId];
+
         require(
             currentPosition.isActive == true,
             "current position must be active"
@@ -119,6 +137,19 @@ contract LongPosition is Pausable, CompoundBase, UniswapBase {
         currentPosition.borrowAmount = 0;
         currentPosition.leverageAmount = 0;
         _closeLoan();
+        emit PositionUpdate(
+            currentPosionId,
+            msg.sender,
+            true,
+            false,
+            previousPosition.depositAmount,
+            0,
+            previousPosition.borrowAmount,
+            0,
+            previousPosition.leverageAmount,
+            0
+        );
+
         _withdrawCapitalAndProfit();
 
         currentPosionId++;
@@ -165,18 +196,19 @@ contract LongPosition is Pausable, CompoundBase, UniswapBase {
     }
 
     function _withdrawCapitalAndProfit() private {
-        uint256 profitAmount = IERC20(cTokenToBorrow.underlying()).balanceOf(
-            address(this)
-        );
-        IERC20(cTokenToBorrow.underlying()).safeTransfer(
-            msg.sender,
-            profitAmount
-        );
+        address borrowToken = cTokenToBorrow.underlying();
+        uint256 profitAmount = IERC20(borrowToken).balanceOf(address(this));
+        IERC20(borrowToken).safeTransfer(msg.sender, profitAmount);
+        emit WithdrawERC20(msg.sender, borrowToken, msg.sender, profitAmount);
+
         Address.sendValue(payable(msg.sender), address(this).balance);
-        // emit WithdrawETH(msg.sender, to, address(this).balance);
+        emit WithdrawETH(msg.sender, msg.sender, address(this).balance);
+
         claimComp();
-        uint256 bonusAmount = IERC20(getCompAddress()).balanceOf(address(this));
-        IERC20(getCompAddress()).safeTransfer(msg.sender, bonusAmount);
+        address comp = getCompAddress();
+        uint256 bonusAmount = IERC20(comp).balanceOf(address(this));
+        IERC20(comp).safeTransfer(msg.sender, bonusAmount);
+        emit WithdrawERC20(msg.sender, comp, msg.sender, bonusAmount);
     }
 
     function getMaxBorrowAmount() public view returns (uint256) {

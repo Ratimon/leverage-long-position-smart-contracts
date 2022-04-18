@@ -20,7 +20,7 @@ yalc.lock
 kyc.production.json
 contractsInfo.json
 deployments/hardhat
-deployments/localhost
+# deployments/localhost
 
 .dapp/
 _lib/
