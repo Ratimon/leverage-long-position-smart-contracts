@@ -1,5 +1,29 @@
 # 📚 smartcontract
 
+### Quick Guide
+
+1. Spinning Up Node
+
+```bash
+yarn fork:node mainnet --blockNumber 14518731
+```
+
+This will be stored in `/Deployments/localhost` but it stores only recently deployed one. Then, this will use to build artifact in the next step
+
+2. Building Artifacts to use in frontend
+
+```bash
+yarn hardhat export --network localhost --export "./assets/web/contracts.json"
+```
+
+This will generate `contracts.json` to be used in front-end part of monorepo
+
+3. Running Test (Optional)
+
+```bash
+yarn fork:test mainnet --blockNumber 14518731 --tags "protocol"
+```
+
 ### Description
 
 ### 1. 🏗 Installation
