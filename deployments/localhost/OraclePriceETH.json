@@ -1,0 +1,549 @@
+{
+  "address": "0x6865a842548f3Fe233C93e77487578B0Cc468B1f",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_oracle",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_backupOracle",
+          "type": "address"
+        },
+        {
+          "internalType": "bool",
+          "name": "_isInvert",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "oldBackupOracle",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "newBackupOracle",
+          "type": "address"
+        }
+      ],
+      "name": "BackupOracleUpdate",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "int256",
+          "name": "oldDecimalsNormalizer",
+          "type": "int256"
+        },
+        {
+          "indexed": false,
+          "internalType": "int256",
+          "name": "newDecimalsNormalizer",
+          "type": "int256"
+        }
+      ],
+      "name": "DecimalsNormalizerUpdate",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "bool",
+          "name": "oldDoInvert",
+          "type": "bool"
+        },
+        {
+          "indexed": false,
+          "internalType": "bool",
+          "name": "newDoInvert",
+          "type": "bool"
+        }
+      ],
+      "name": "InvertUpdate",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "oldOracle",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "newOracle",
+          "type": "address"
+        }
+      ],
+      "name": "OracleUpdate",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "previousOwner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnershipTransferred",
+      "type": "event"
+    },
+    {
+      "inputs": [],
+      "name": "backupOracle",
+      "outputs": [
+        {
+          "internalType": "contract IOracle",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "decimalsNormalizer",
+      "outputs": [
+        {
+          "internalType": "int256",
+          "name": "",
+          "type": "int256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "doInvert",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "value",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct Decimal.D256",
+          "name": "price",
+          "type": "tuple"
+        }
+      ],
+      "name": "invert",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "value",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct Decimal.D256",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "pure",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "oracle",
+      "outputs": [
+        {
+          "internalType": "contract IOracle",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "readOracle",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "value",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct Decimal.D256",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "renounceOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "newBackupOracle",
+          "type": "address"
+        }
+      ],
+      "name": "setBackupOracle",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "int256",
+          "name": "newDecimalsNormalizer",
+          "type": "int256"
+        }
+      ],
+      "name": "setDecimalsNormalizer",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bool",
+          "name": "newDoInvert",
+          "type": "bool"
+        }
+      ],
+      "name": "setDoInvert",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "newOracle",
+          "type": "address"
+        }
+      ],
+      "name": "setOracle",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "transferOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "updateOracle",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "transactionHash": "0xd0904c140495e947ad92791c40da83b91999f4e5f3a4f3ff62e85a03b00c29eb",
+  "receipt": {
+    "to": null,
+    "from": "0x305A65d6e453c613F47CB8173941d9b3d2604fBe",
+    "contractAddress": "0x6865a842548f3Fe233C93e77487578B0Cc468B1f",
+    "transactionIndex": 0,
+    "gasUsed": "830542",
+    "logsBloom": "0x20000000000000000000000000000000001080000000000000800000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000008000000020000000000000000000900000000010000000000000000000000400000000000000000000004000000000000000000000000000100000000000000000000000000000000000000040000000000000080000210000000000000000000000000000000000000000000000000000000000000000020000000000020000000000000000000000000000000401000000000000000000000000100000010",
+    "blockHash": "0xaac4b3956c63688080687104658f1d6b342fdb4c76b3252161ed437525441263",
+    "transactionHash": "0xd0904c140495e947ad92791c40da83b91999f4e5f3a4f3ff62e85a03b00c29eb",
+    "logs": [
+      {
+        "transactionIndex": 0,
+        "blockNumber": 14518735,
+        "transactionHash": "0xd0904c140495e947ad92791c40da83b91999f4e5f3a4f3ff62e85a03b00c29eb",
+        "address": "0x6865a842548f3Fe233C93e77487578B0Cc468B1f",
+        "topics": [
+          "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0",
+          "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "0x000000000000000000000000305a65d6e453c613f47cb8173941d9b3d2604fbe"
+        ],
+        "data": "0x",
+        "logIndex": 0,
+        "blockHash": "0xaac4b3956c63688080687104658f1d6b342fdb4c76b3252161ed437525441263"
+      },
+      {
+        "transactionIndex": 0,
+        "blockNumber": 14518735,
+        "transactionHash": "0xd0904c140495e947ad92791c40da83b91999f4e5f3a4f3ff62e85a03b00c29eb",
+        "address": "0x6865a842548f3Fe233C93e77487578B0Cc468B1f",
+        "topics": [
+          "0x93450534569bdbb3109b44eef77c9b236897f4caa4f201be10252d6462a56937",
+          "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "0x000000000000000000000000bd63d8e49d7007c1757fd6245e950a3517582536"
+        ],
+        "data": "0x",
+        "logIndex": 1,
+        "blockHash": "0xaac4b3956c63688080687104658f1d6b342fdb4c76b3252161ed437525441263"
+      },
+      {
+        "transactionIndex": 0,
+        "blockNumber": 14518735,
+        "transactionHash": "0xd0904c140495e947ad92791c40da83b91999f4e5f3a4f3ff62e85a03b00c29eb",
+        "address": "0x6865a842548f3Fe233C93e77487578B0Cc468B1f",
+        "topics": [
+          "0x16b9ae7ca814a6dfd3357b20f33bcc7c194676988d5da46846628da394df8ab3"
+        ],
+        "data": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "logIndex": 2,
+        "blockHash": "0xaac4b3956c63688080687104658f1d6b342fdb4c76b3252161ed437525441263"
+      },
+      {
+        "transactionIndex": 0,
+        "blockNumber": 14518735,
+        "transactionHash": "0xd0904c140495e947ad92791c40da83b91999f4e5f3a4f3ff62e85a03b00c29eb",
+        "address": "0x6865a842548f3Fe233C93e77487578B0Cc468B1f",
+        "topics": [
+          "0xc45ec9015c033bb1ee553a67346dd851062dddce070a6dddb7616e5d7595bcc2"
+        ],
+        "data": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+        "logIndex": 3,
+        "blockHash": "0xaac4b3956c63688080687104658f1d6b342fdb4c76b3252161ed437525441263"
+      }
+    ],
+    "blockNumber": 14518735,
+    "cumulativeGasUsed": "830542",
+    "status": 1,
+    "byzantium": true
+  },
+  "args": [
+    "0xbd63D8E49d7007c1757fD6245E950a3517582536",
+    "0xbd63D8E49d7007c1757fD6245E950a3517582536",
+    false
+  ],
+  "numDeployments": 1,
+  "solcInputHash": "00805697ef62fdb68a8fef88f0980135",
+  "metadata": "{\"compiler\":{\"version\":\"0.8.13+commit.abaa5c0e\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_oracle\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_backupOracle\",\"type\":\"address\"},{\"internalType\":\"bool\",\"name\":\"_isInvert\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"oldBackupOracle\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newBackupOracle\",\"type\":\"address\"}],\"name\":\"BackupOracleUpdate\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"int256\",\"name\":\"oldDecimalsNormalizer\",\"type\":\"int256\"},{\"indexed\":false,\"internalType\":\"int256\",\"name\":\"newDecimalsNormalizer\",\"type\":\"int256\"}],\"name\":\"DecimalsNormalizerUpdate\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"bool\",\"name\":\"oldDoInvert\",\"type\":\"bool\"},{\"indexed\":false,\"internalType\":\"bool\",\"name\":\"newDoInvert\",\"type\":\"bool\"}],\"name\":\"InvertUpdate\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"oldOracle\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOracle\",\"type\":\"address\"}],\"name\":\"OracleUpdate\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"backupOracle\",\"outputs\":[{\"internalType\":\"contract IOracle\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"decimalsNormalizer\",\"outputs\":[{\"internalType\":\"int256\",\"name\":\"\",\"type\":\"int256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"doInvert\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"value\",\"type\":\"uint256\"}],\"internalType\":\"struct Decimal.D256\",\"name\":\"price\",\"type\":\"tuple\"}],\"name\":\"invert\",\"outputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"value\",\"type\":\"uint256\"}],\"internalType\":\"struct Decimal.D256\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"pure\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"oracle\",\"outputs\":[{\"internalType\":\"contract IOracle\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"readOracle\",\"outputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"value\",\"type\":\"uint256\"}],\"internalType\":\"struct Decimal.D256\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"renounceOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newBackupOracle\",\"type\":\"address\"}],\"name\":\"setBackupOracle\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"int256\",\"name\":\"newDecimalsNormalizer\",\"type\":\"int256\"}],\"name\":\"setDecimalsNormalizer\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"bool\",\"name\":\"newDoInvert\",\"type\":\"bool\"}],\"name\":\"setDoInvert\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOracle\",\"type\":\"address\"}],\"name\":\"setOracle\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"updateOracle\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{\"invert((uint256))\":{\"details\":\"the inverted peg would be X per Token\",\"params\":{\"price\":\"the peg price to invert\"},\"returns\":{\"_0\":\"the inverted peg as a Decimal\"}},\"owner()\":{\"details\":\"Returns the address of the current owner.\"},\"readOracle()\":{\"details\":\"the peg is defined as Pool token per X with X being ETH, dollars, etc\",\"returns\":{\"_0\":\"the peg as a Decimal\"}},\"renounceOwnership()\":{\"details\":\"Leaves the contract without owner. It will not be possible to call `onlyOwner` functions anymore. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner.\"},\"setBackupOracle(address)\":{\"params\":{\"newBackupOracle\":\"the new backup oracle to reference\"}},\"setDecimalsNormalizer(int256)\":{\"params\":{\"newDecimalsNormalizer\":\"the new decimalsNormalizer\"}},\"setDoInvert(bool)\":{\"params\":{\"newDoInvert\":\"the new flag for whether to invert\"}},\"setOracle(address)\":{\"params\":{\"newOracle\":\"the new oracle to reference\"}},\"transferOwnership(address)\":{\"details\":\"Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner.\"}},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{\"backupOracle()\":{\"notice\":\"the backup oracle reference by the contract\"},\"decimalsNormalizer()\":{\"notice\":\"number of decimals to scale oracle price by, i.e. multiplying by 10^(decimalsNormalizer)\"},\"invert((uint256))\":{\"notice\":\"invert a peg price\"},\"oracle()\":{\"notice\":\"the oracle reference by the contract\"},\"readOracle()\":{\"notice\":\"the peg price of the referenced oracle\"},\"setBackupOracle(address)\":{\"notice\":\"sets the referenced backup oracle\"},\"setDecimalsNormalizer(int256)\":{\"notice\":\"sets the new decimalsNormalizer\"},\"setDoInvert(bool)\":{\"notice\":\"sets the flag for whether to invert or not\"},\"setOracle(address)\":{\"notice\":\"sets the referenced oracle\"},\"updateOracle()\":{\"notice\":\"updates the referenced oracle\"}},\"version\":1}},\"settings\":{\"compilationTarget\":{\"src/oracle/PriceOracle.sol\":\"PriceOracle\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\",\"useLiteralContent\":true},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[]},\"sources\":{\"@openzeppelin/contracts/access/Ownable.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// OpenZeppelin Contracts v4.4.1 (access/Ownable.sol)\\n\\npragma solidity ^0.8.0;\\n\\nimport \\\"../utils/Context.sol\\\";\\n\\n/**\\n * @dev Contract module which provides a basic access control mechanism, where\\n * there is an account (an owner) that can be granted exclusive access to\\n * specific functions.\\n *\\n * By default, the owner account will be the one that deploys the contract. This\\n * can later be changed with {transferOwnership}.\\n *\\n * This module is used through inheritance. It will make available the modifier\\n * `onlyOwner`, which can be applied to your functions to restrict their use to\\n * the owner.\\n */\\nabstract contract Ownable is Context {\\n    address private _owner;\\n\\n    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);\\n\\n    /**\\n     * @dev Initializes the contract setting the deployer as the initial owner.\\n     */\\n    constructor() {\\n        _transferOwnership(_msgSender());\\n    }\\n\\n    /**\\n     * @dev Returns the address of the current owner.\\n     */\\n    function owner() public view virtual returns (address) {\\n        return _owner;\\n    }\\n\\n    /**\\n     * @dev Throws if called by any account other than the owner.\\n     */\\n    modifier onlyOwner() {\\n        require(owner() == _msgSender(), \\\"Ownable: caller is not the owner\\\");\\n        _;\\n    }\\n\\n    /**\\n     * @dev Leaves the contract without owner. It will not be possible to call\\n     * `onlyOwner` functions anymore. Can only be called by the current owner.\\n     *\\n     * NOTE: Renouncing ownership will leave the contract without an owner,\\n     * thereby removing any functionality that is only available to the owner.\\n     */\\n    function renounceOwnership() public virtual onlyOwner {\\n        _transferOwnership(address(0));\\n    }\\n\\n    /**\\n     * @dev Transfers ownership of the contract to a new account (`newOwner`).\\n     * Can only be called by the current owner.\\n     */\\n    function transferOwnership(address newOwner) public virtual onlyOwner {\\n        require(newOwner != address(0), \\\"Ownable: new owner is the zero address\\\");\\n        _transferOwnership(newOwner);\\n    }\\n\\n    /**\\n     * @dev Transfers ownership of the contract to a new account (`newOwner`).\\n     * Internal function without access restriction.\\n     */\\n    function _transferOwnership(address newOwner) internal virtual {\\n        address oldOwner = _owner;\\n        _owner = newOwner;\\n        emit OwnershipTransferred(oldOwner, newOwner);\\n    }\\n}\\n\",\"keccak256\":\"0x24e0364e503a9bbde94c715d26573a76f14cd2a202d45f96f52134ab806b67b9\",\"license\":\"MIT\"},\"@openzeppelin/contracts/token/ERC20/IERC20.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// OpenZeppelin Contracts (last updated v4.5.0) (token/ERC20/IERC20.sol)\\n\\npragma solidity ^0.8.0;\\n\\n/**\\n * @dev Interface of the ERC20 standard as defined in the EIP.\\n */\\ninterface IERC20 {\\n    /**\\n     * @dev Returns the amount of tokens in existence.\\n     */\\n    function totalSupply() external view returns (uint256);\\n\\n    /**\\n     * @dev Returns the amount of tokens owned by `account`.\\n     */\\n    function balanceOf(address account) external view returns (uint256);\\n\\n    /**\\n     * @dev Moves `amount` tokens from the caller's account to `to`.\\n     *\\n     * Returns a boolean value indicating whether the operation succeeded.\\n     *\\n     * Emits a {Transfer} event.\\n     */\\n    function transfer(address to, uint256 amount) external returns (bool);\\n\\n    /**\\n     * @dev Returns the remaining number of tokens that `spender` will be\\n     * allowed to spend on behalf of `owner` through {transferFrom}. This is\\n     * zero by default.\\n     *\\n     * This value changes when {approve} or {transferFrom} are called.\\n     */\\n    function allowance(address owner, address spender) external view returns (uint256);\\n\\n    /**\\n     * @dev Sets `amount` as the allowance of `spender` over the caller's tokens.\\n     *\\n     * Returns a boolean value indicating whether the operation succeeded.\\n     *\\n     * IMPORTANT: Beware that changing an allowance with this method brings the risk\\n     * that someone may use both the old and the new allowance by unfortunate\\n     * transaction ordering. One possible solution to mitigate this race\\n     * condition is to first reduce the spender's allowance to 0 and set the\\n     * desired value afterwards:\\n     * https://github.com/ethereum/EIPs/issues/20#issuecomment-263524729\\n     *\\n     * Emits an {Approval} event.\\n     */\\n    function approve(address spender, uint256 amount) external returns (bool);\\n\\n    /**\\n     * @dev Moves `amount` tokens from `from` to `to` using the\\n     * allowance mechanism. `amount` is then deducted from the caller's\\n     * allowance.\\n     *\\n     * Returns a boolean value indicating whether the operation succeeded.\\n     *\\n     * Emits a {Transfer} event.\\n     */\\n    function transferFrom(\\n        address from,\\n        address to,\\n        uint256 amount\\n    ) external returns (bool);\\n\\n    /**\\n     * @dev Emitted when `value` tokens are moved from one account (`from`) to\\n     * another (`to`).\\n     *\\n     * Note that `value` may be zero.\\n     */\\n    event Transfer(address indexed from, address indexed to, uint256 value);\\n\\n    /**\\n     * @dev Emitted when the allowance of a `spender` for an `owner` is set by\\n     * a call to {approve}. `value` is the new allowance.\\n     */\\n    event Approval(address indexed owner, address indexed spender, uint256 value);\\n}\\n\",\"keccak256\":\"0xbbc8ac883ac3c0078ce5ad3e288fbb3ffcc8a30c3a98c0fda0114d64fc44fca2\",\"license\":\"MIT\"},\"@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// OpenZeppelin Contracts v4.4.1 (token/ERC20/extensions/IERC20Metadata.sol)\\n\\npragma solidity ^0.8.0;\\n\\nimport \\\"../IERC20.sol\\\";\\n\\n/**\\n * @dev Interface for the optional metadata functions from the ERC20 standard.\\n *\\n * _Available since v4.1._\\n */\\ninterface IERC20Metadata is IERC20 {\\n    /**\\n     * @dev Returns the name of the token.\\n     */\\n    function name() external view returns (string memory);\\n\\n    /**\\n     * @dev Returns the symbol of the token.\\n     */\\n    function symbol() external view returns (string memory);\\n\\n    /**\\n     * @dev Returns the decimals places of the token.\\n     */\\n    function decimals() external view returns (uint8);\\n}\\n\",\"keccak256\":\"0x8de418a5503946cabe331f35fe242d3201a73f67f77aaeb7110acb1f30423aca\",\"license\":\"MIT\"},\"@openzeppelin/contracts/utils/Context.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// OpenZeppelin Contracts v4.4.1 (utils/Context.sol)\\n\\npragma solidity ^0.8.0;\\n\\n/**\\n * @dev Provides information about the current execution context, including the\\n * sender of the transaction and its data. While these are generally available\\n * via msg.sender and msg.data, they should not be accessed in such a direct\\n * manner, since when dealing with meta-transactions the account sending and\\n * paying for execution may not be the actual sender (as far as an application\\n * is concerned).\\n *\\n * This contract is only required for intermediate, library-like contracts.\\n */\\nabstract contract Context {\\n    function _msgSender() internal view virtual returns (address) {\\n        return msg.sender;\\n    }\\n\\n    function _msgData() internal view virtual returns (bytes calldata) {\\n        return msg.data;\\n    }\\n}\\n\",\"keccak256\":\"0xe2e337e6dde9ef6b680e07338c493ebea1b5fd09b43424112868e9cc1706bca7\",\"license\":\"MIT\"},\"@openzeppelin/contracts/utils/math/SafeCast.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// OpenZeppelin Contracts v4.4.1 (utils/math/SafeCast.sol)\\n\\npragma solidity ^0.8.0;\\n\\n/**\\n * @dev Wrappers over Solidity's uintXX/intXX casting operators with added overflow\\n * checks.\\n *\\n * Downcasting from uint256/int256 in Solidity does not revert on overflow. This can\\n * easily result in undesired exploitation or bugs, since developers usually\\n * assume that overflows raise errors. `SafeCast` restores this intuition by\\n * reverting the transaction when such an operation overflows.\\n *\\n * Using this library instead of the unchecked operations eliminates an entire\\n * class of bugs, so it's recommended to use it always.\\n *\\n * Can be combined with {SafeMath} and {SignedSafeMath} to extend it to smaller types, by performing\\n * all math on `uint256` and `int256` and then downcasting.\\n */\\nlibrary SafeCast {\\n    /**\\n     * @dev Returns the downcasted uint224 from uint256, reverting on\\n     * overflow (when the input is greater than largest uint224).\\n     *\\n     * Counterpart to Solidity's `uint224` operator.\\n     *\\n     * Requirements:\\n     *\\n     * - input must fit into 224 bits\\n     */\\n    function toUint224(uint256 value) internal pure returns (uint224) {\\n        require(value <= type(uint224).max, \\\"SafeCast: value doesn't fit in 224 bits\\\");\\n        return uint224(value);\\n    }\\n\\n    /**\\n     * @dev Returns the downcasted uint128 from uint256, reverting on\\n     * overflow (when the input is greater than largest uint128).\\n     *\\n     * Counterpart to Solidity's `uint128` operator.\\n     *\\n     * Requirements:\\n     *\\n     * - input must fit into 128 bits\\n     */\\n    function toUint128(uint256 value) internal pure returns (uint128) {\\n        require(value <= type(uint128).max, \\\"SafeCast: value doesn't fit in 128 bits\\\");\\n        return uint128(value);\\n    }\\n\\n    /**\\n     * @dev Returns the downcasted uint96 from uint256, reverting on\\n     * overflow (when the input is greater than largest uint96).\\n     *\\n     * Counterpart to Solidity's `uint96` operator.\\n     *\\n     * Requirements:\\n     *\\n     * - input must fit into 96 bits\\n     */\\n    function toUint96(uint256 value) internal pure returns (uint96) {\\n        require(value <= type(uint96).max, \\\"SafeCast: value doesn't fit in 96 bits\\\");\\n        return uint96(value);\\n    }\\n\\n    /**\\n     * @dev Returns the downcasted uint64 from uint256, reverting on\\n     * overflow (when the input is greater than largest uint64).\\n     *\\n     * Counterpart to Solidity's `uint64` operator.\\n     *\\n     * Requirements:\\n     *\\n     * - input must fit into 64 bits\\n     */\\n    function toUint64(uint256 value) internal pure returns (uint64) {\\n        require(value <= type(uint64).max, \\\"SafeCast: value doesn't fit in 64 bits\\\");\\n        return uint64(value);\\n    }\\n\\n    /**\\n     * @dev Returns the downcasted uint32 from uint256, reverting on\\n     * overflow (when the input is greater than largest uint32).\\n     *\\n     * Counterpart to Solidity's `uint32` operator.\\n     *\\n     * Requirements:\\n     *\\n     * - input must fit into 32 bits\\n     */\\n    function toUint32(uint256 value) internal pure returns (uint32) {\\n        require(value <= type(uint32).max, \\\"SafeCast: value doesn't fit in 32 bits\\\");\\n        return uint32(value);\\n    }\\n\\n    /**\\n     * @dev Returns the downcasted uint16 from uint256, reverting on\\n     * overflow (when the input is greater than largest uint16).\\n     *\\n     * Counterpart to Solidity's `uint16` operator.\\n     *\\n     * Requirements:\\n     *\\n     * - input must fit into 16 bits\\n     */\\n    function toUint16(uint256 value) internal pure returns (uint16) {\\n        require(value <= type(uint16).max, \\\"SafeCast: value doesn't fit in 16 bits\\\");\\n        return uint16(value);\\n    }\\n\\n    /**\\n     * @dev Returns the downcasted uint8 from uint256, reverting on\\n     * overflow (when the input is greater than largest uint8).\\n     *\\n     * Counterpart to Solidity's `uint8` operator.\\n     *\\n     * Requirements:\\n     *\\n     * - input must fit into 8 bits.\\n     */\\n    function toUint8(uint256 value) internal pure returns (uint8) {\\n        require(value <= type(uint8).max, \\\"SafeCast: value doesn't fit in 8 bits\\\");\\n        return uint8(value);\\n    }\\n\\n    /**\\n     * @dev Converts a signed int256 into an unsigned uint256.\\n     *\\n     * Requirements:\\n     *\\n     * - input must be greater than or equal to 0.\\n     */\\n    function toUint256(int256 value) internal pure returns (uint256) {\\n        require(value >= 0, \\\"SafeCast: value must be positive\\\");\\n        return uint256(value);\\n    }\\n\\n    /**\\n     * @dev Returns the downcasted int128 from int256, reverting on\\n     * overflow (when the input is less than smallest int128 or\\n     * greater than largest int128).\\n     *\\n     * Counterpart to Solidity's `int128` operator.\\n     *\\n     * Requirements:\\n     *\\n     * - input must fit into 128 bits\\n     *\\n     * _Available since v3.1._\\n     */\\n    function toInt128(int256 value) internal pure returns (int128) {\\n        require(value >= type(int128).min && value <= type(int128).max, \\\"SafeCast: value doesn't fit in 128 bits\\\");\\n        return int128(value);\\n    }\\n\\n    /**\\n     * @dev Returns the downcasted int64 from int256, reverting on\\n     * overflow (when the input is less than smallest int64 or\\n     * greater than largest int64).\\n     *\\n     * Counterpart to Solidity's `int64` operator.\\n     *\\n     * Requirements:\\n     *\\n     * - input must fit into 64 bits\\n     *\\n     * _Available since v3.1._\\n     */\\n    function toInt64(int256 value) internal pure returns (int64) {\\n        require(value >= type(int64).min && value <= type(int64).max, \\\"SafeCast: value doesn't fit in 64 bits\\\");\\n        return int64(value);\\n    }\\n\\n    /**\\n     * @dev Returns the downcasted int32 from int256, reverting on\\n     * overflow (when the input is less than smallest int32 or\\n     * greater than largest int32).\\n     *\\n     * Counterpart to Solidity's `int32` operator.\\n     *\\n     * Requirements:\\n     *\\n     * - input must fit into 32 bits\\n     *\\n     * _Available since v3.1._\\n     */\\n    function toInt32(int256 value) internal pure returns (int32) {\\n        require(value >= type(int32).min && value <= type(int32).max, \\\"SafeCast: value doesn't fit in 32 bits\\\");\\n        return int32(value);\\n    }\\n\\n    /**\\n     * @dev Returns the downcasted int16 from int256, reverting on\\n     * overflow (when the input is less than smallest int16 or\\n     * greater than largest int16).\\n     *\\n     * Counterpart to Solidity's `int16` operator.\\n     *\\n     * Requirements:\\n     *\\n     * - input must fit into 16 bits\\n     *\\n     * _Available since v3.1._\\n     */\\n    function toInt16(int256 value) internal pure returns (int16) {\\n        require(value >= type(int16).min && value <= type(int16).max, \\\"SafeCast: value doesn't fit in 16 bits\\\");\\n        return int16(value);\\n    }\\n\\n    /**\\n     * @dev Returns the downcasted int8 from int256, reverting on\\n     * overflow (when the input is less than smallest int8 or\\n     * greater than largest int8).\\n     *\\n     * Counterpart to Solidity's `int8` operator.\\n     *\\n     * Requirements:\\n     *\\n     * - input must fit into 8 bits.\\n     *\\n     * _Available since v3.1._\\n     */\\n    function toInt8(int256 value) internal pure returns (int8) {\\n        require(value >= type(int8).min && value <= type(int8).max, \\\"SafeCast: value doesn't fit in 8 bits\\\");\\n        return int8(value);\\n    }\\n\\n    /**\\n     * @dev Converts an unsigned uint256 into a signed int256.\\n     *\\n     * Requirements:\\n     *\\n     * - input must be less than or equal to maxInt256.\\n     */\\n    function toInt256(uint256 value) internal pure returns (int256) {\\n        // Note: Unsafe cast below is okay because `type(int256).max` is guaranteed to be positive\\n        require(value <= uint256(type(int256).max), \\\"SafeCast: value doesn't fit in an int256\\\");\\n        return int256(value);\\n    }\\n}\\n\",\"keccak256\":\"0x5c6caab697d302ad7eb59c234a4d2dbc965c1bae87709bd2850060b7695b28c7\",\"license\":\"MIT\"},\"@openzeppelin/contracts/utils/math/SafeMath.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// OpenZeppelin Contracts v4.4.1 (utils/math/SafeMath.sol)\\n\\npragma solidity ^0.8.0;\\n\\n// CAUTION\\n// This version of SafeMath should only be used with Solidity 0.8 or later,\\n// because it relies on the compiler's built in overflow checks.\\n\\n/**\\n * @dev Wrappers over Solidity's arithmetic operations.\\n *\\n * NOTE: `SafeMath` is generally not needed starting with Solidity 0.8, since the compiler\\n * now has built in overflow checking.\\n */\\nlibrary SafeMath {\\n    /**\\n     * @dev Returns the addition of two unsigned integers, with an overflow flag.\\n     *\\n     * _Available since v3.4._\\n     */\\n    function tryAdd(uint256 a, uint256 b) internal pure returns (bool, uint256) {\\n        unchecked {\\n            uint256 c = a + b;\\n            if (c < a) return (false, 0);\\n            return (true, c);\\n        }\\n    }\\n\\n    /**\\n     * @dev Returns the substraction of two unsigned integers, with an overflow flag.\\n     *\\n     * _Available since v3.4._\\n     */\\n    function trySub(uint256 a, uint256 b) internal pure returns (bool, uint256) {\\n        unchecked {\\n            if (b > a) return (false, 0);\\n            return (true, a - b);\\n        }\\n    }\\n\\n    /**\\n     * @dev Returns the multiplication of two unsigned integers, with an overflow flag.\\n     *\\n     * _Available since v3.4._\\n     */\\n    function tryMul(uint256 a, uint256 b) internal pure returns (bool, uint256) {\\n        unchecked {\\n            // Gas optimization: this is cheaper than requiring 'a' not being zero, but the\\n            // benefit is lost if 'b' is also tested.\\n            // See: https://github.com/OpenZeppelin/openzeppelin-contracts/pull/522\\n            if (a == 0) return (true, 0);\\n            uint256 c = a * b;\\n            if (c / a != b) return (false, 0);\\n            return (true, c);\\n        }\\n    }\\n\\n    /**\\n     * @dev Returns the division of two unsigned integers, with a division by zero flag.\\n     *\\n     * _Available since v3.4._\\n     */\\n    function tryDiv(uint256 a, uint256 b) internal pure returns (bool, uint256) {\\n        unchecked {\\n            if (b == 0) return (false, 0);\\n            return (true, a / b);\\n        }\\n    }\\n\\n    /**\\n     * @dev Returns the remainder of dividing two unsigned integers, with a division by zero flag.\\n     *\\n     * _Available since v3.4._\\n     */\\n    function tryMod(uint256 a, uint256 b) internal pure returns (bool, uint256) {\\n        unchecked {\\n            if (b == 0) return (false, 0);\\n            return (true, a % b);\\n        }\\n    }\\n\\n    /**\\n     * @dev Returns the addition of two unsigned integers, reverting on\\n     * overflow.\\n     *\\n     * Counterpart to Solidity's `+` operator.\\n     *\\n     * Requirements:\\n     *\\n     * - Addition cannot overflow.\\n     */\\n    function add(uint256 a, uint256 b) internal pure returns (uint256) {\\n        return a + b;\\n    }\\n\\n    /**\\n     * @dev Returns the subtraction of two unsigned integers, reverting on\\n     * overflow (when the result is negative).\\n     *\\n     * Counterpart to Solidity's `-` operator.\\n     *\\n     * Requirements:\\n     *\\n     * - Subtraction cannot overflow.\\n     */\\n    function sub(uint256 a, uint256 b) internal pure returns (uint256) {\\n        return a - b;\\n    }\\n\\n    /**\\n     * @dev Returns the multiplication of two unsigned integers, reverting on\\n     * overflow.\\n     *\\n     * Counterpart to Solidity's `*` operator.\\n     *\\n     * Requirements:\\n     *\\n     * - Multiplication cannot overflow.\\n     */\\n    function mul(uint256 a, uint256 b) internal pure returns (uint256) {\\n        return a * b;\\n    }\\n\\n    /**\\n     * @dev Returns the integer division of two unsigned integers, reverting on\\n     * division by zero. The result is rounded towards zero.\\n     *\\n     * Counterpart to Solidity's `/` operator.\\n     *\\n     * Requirements:\\n     *\\n     * - The divisor cannot be zero.\\n     */\\n    function div(uint256 a, uint256 b) internal pure returns (uint256) {\\n        return a / b;\\n    }\\n\\n    /**\\n     * @dev Returns the remainder of dividing two unsigned integers. (unsigned integer modulo),\\n     * reverting when dividing by zero.\\n     *\\n     * Counterpart to Solidity's `%` operator. This function uses a `revert`\\n     * opcode (which leaves remaining gas untouched) while Solidity uses an\\n     * invalid opcode to revert (consuming all remaining gas).\\n     *\\n     * Requirements:\\n     *\\n     * - The divisor cannot be zero.\\n     */\\n    function mod(uint256 a, uint256 b) internal pure returns (uint256) {\\n        return a % b;\\n    }\\n\\n    /**\\n     * @dev Returns the subtraction of two unsigned integers, reverting with custom message on\\n     * overflow (when the result is negative).\\n     *\\n     * CAUTION: This function is deprecated because it requires allocating memory for the error\\n     * message unnecessarily. For custom revert reasons use {trySub}.\\n     *\\n     * Counterpart to Solidity's `-` operator.\\n     *\\n     * Requirements:\\n     *\\n     * - Subtraction cannot overflow.\\n     */\\n    function sub(\\n        uint256 a,\\n        uint256 b,\\n        string memory errorMessage\\n    ) internal pure returns (uint256) {\\n        unchecked {\\n            require(b <= a, errorMessage);\\n            return a - b;\\n        }\\n    }\\n\\n    /**\\n     * @dev Returns the integer division of two unsigned integers, reverting with custom message on\\n     * division by zero. The result is rounded towards zero.\\n     *\\n     * Counterpart to Solidity's `/` operator. Note: this function uses a\\n     * `revert` opcode (which leaves remaining gas untouched) while Solidity\\n     * uses an invalid opcode to revert (consuming all remaining gas).\\n     *\\n     * Requirements:\\n     *\\n     * - The divisor cannot be zero.\\n     */\\n    function div(\\n        uint256 a,\\n        uint256 b,\\n        string memory errorMessage\\n    ) internal pure returns (uint256) {\\n        unchecked {\\n            require(b > 0, errorMessage);\\n            return a / b;\\n        }\\n    }\\n\\n    /**\\n     * @dev Returns the remainder of dividing two unsigned integers. (unsigned integer modulo),\\n     * reverting with custom message when dividing by zero.\\n     *\\n     * CAUTION: This function is deprecated because it requires allocating memory for the error\\n     * message unnecessarily. For custom revert reasons use {tryMod}.\\n     *\\n     * Counterpart to Solidity's `%` operator. This function uses a `revert`\\n     * opcode (which leaves remaining gas untouched) while Solidity uses an\\n     * invalid opcode to revert (consuming all remaining gas).\\n     *\\n     * Requirements:\\n     *\\n     * - The divisor cannot be zero.\\n     */\\n    function mod(\\n        uint256 a,\\n        uint256 b,\\n        string memory errorMessage\\n    ) internal pure returns (uint256) {\\n        unchecked {\\n            require(b > 0, errorMessage);\\n            return a % b;\\n        }\\n    }\\n}\\n\",\"keccak256\":\"0xa2f576be637946f767aa56601c26d717f48a0aff44f82e46f13807eea1009a21\",\"license\":\"MIT\"},\"src/external/Decimal.sol\":{\"content\":\"/*\\n    Copyright 2019 dYdX Trading Inc.\\n    Copyright 2020 Empty Set Squad <emptysetsquad@protonmail.com>\\n    Licensed under the Apache License, Version 2.0 (the \\\"License\\\");\\n    you may not use this file except in compliance with the License.\\n    You may obtain a copy of the License at\\n    http://www.apache.org/licenses/LICENSE-2.0\\n    Unless required by applicable law or agreed to in writing, software\\n    distributed under the License is distributed on an \\\"AS IS\\\" BASIS,\\n    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\\n    See the License for the specific language governing permissions and\\n    limitations under the License.\\n*/\\n\\npragma solidity ^0.8.4;\\n\\nimport \\\"@openzeppelin/contracts/utils/math/SafeMath.sol\\\";\\n\\n/**\\n * @title Decimal\\n * @author dYdX\\n *\\n * Library that defines a fixed-point number with 18 decimal places.\\n */\\nlibrary Decimal {\\n    using SafeMath for uint256;\\n\\n    // ============ Constants ============\\n\\n    uint256 private constant BASE = 10**18;\\n\\n    // ============ Structs ============\\n\\n    struct D256 {\\n        uint256 value;\\n    }\\n\\n    // ============ Static Functions ============\\n\\n    function zero() internal pure returns (D256 memory) {\\n        return D256({value: 0});\\n    }\\n\\n    function one() internal pure returns (D256 memory) {\\n        return D256({value: BASE});\\n    }\\n\\n    function from(uint256 a) internal pure returns (D256 memory) {\\n        return D256({value: a.mul(BASE)});\\n    }\\n\\n    function ratio(uint256 a, uint256 b) internal pure returns (D256 memory) {\\n        return D256({value: getPartial(a, BASE, b)});\\n    }\\n\\n    // ============ Self Functions ============\\n\\n    function add(D256 memory self, uint256 b)\\n        internal\\n        pure\\n        returns (D256 memory)\\n    {\\n        return D256({value: self.value.add(b.mul(BASE))});\\n    }\\n\\n    function sub(D256 memory self, uint256 b)\\n        internal\\n        pure\\n        returns (D256 memory)\\n    {\\n        return D256({value: self.value.sub(b.mul(BASE))});\\n    }\\n\\n    function sub(\\n        D256 memory self,\\n        uint256 b,\\n        string memory reason\\n    ) internal pure returns (D256 memory) {\\n        return D256({value: self.value.sub(b.mul(BASE), reason)});\\n    }\\n\\n    function mul(D256 memory self, uint256 b)\\n        internal\\n        pure\\n        returns (D256 memory)\\n    {\\n        return D256({value: self.value.mul(b)});\\n    }\\n\\n    function div(D256 memory self, uint256 b)\\n        internal\\n        pure\\n        returns (D256 memory)\\n    {\\n        return D256({value: self.value.div(b)});\\n    }\\n\\n    function pow(D256 memory self, uint256 b)\\n        internal\\n        pure\\n        returns (D256 memory)\\n    {\\n        if (b == 0) {\\n            return from(1);\\n        }\\n\\n        D256 memory temp = D256({value: self.value});\\n        for (uint256 i = 1; i < b; i++) {\\n            temp = mul(temp, self);\\n        }\\n\\n        return temp;\\n    }\\n\\n    function add(D256 memory self, D256 memory b)\\n        internal\\n        pure\\n        returns (D256 memory)\\n    {\\n        return D256({value: self.value.add(b.value)});\\n    }\\n\\n    function sub(D256 memory self, D256 memory b)\\n        internal\\n        pure\\n        returns (D256 memory)\\n    {\\n        return D256({value: self.value.sub(b.value)});\\n    }\\n\\n    function sub(\\n        D256 memory self,\\n        D256 memory b,\\n        string memory reason\\n    ) internal pure returns (D256 memory) {\\n        return D256({value: self.value.sub(b.value, reason)});\\n    }\\n\\n    function mul(D256 memory self, D256 memory b)\\n        internal\\n        pure\\n        returns (D256 memory)\\n    {\\n        return D256({value: getPartial(self.value, b.value, BASE)});\\n    }\\n\\n    function div(D256 memory self, D256 memory b)\\n        internal\\n        pure\\n        returns (D256 memory)\\n    {\\n        return D256({value: getPartial(self.value, BASE, b.value)});\\n    }\\n\\n    function equals(D256 memory self, D256 memory b)\\n        internal\\n        pure\\n        returns (bool)\\n    {\\n        return self.value == b.value;\\n    }\\n\\n    function greaterThan(D256 memory self, D256 memory b)\\n        internal\\n        pure\\n        returns (bool)\\n    {\\n        return compareTo(self, b) == 2;\\n    }\\n\\n    function lessThan(D256 memory self, D256 memory b)\\n        internal\\n        pure\\n        returns (bool)\\n    {\\n        return compareTo(self, b) == 0;\\n    }\\n\\n    function greaterThanOrEqualTo(D256 memory self, D256 memory b)\\n        internal\\n        pure\\n        returns (bool)\\n    {\\n        return compareTo(self, b) > 0;\\n    }\\n\\n    function lessThanOrEqualTo(D256 memory self, D256 memory b)\\n        internal\\n        pure\\n        returns (bool)\\n    {\\n        return compareTo(self, b) < 2;\\n    }\\n\\n    function isZero(D256 memory self) internal pure returns (bool) {\\n        return self.value == 0;\\n    }\\n\\n    function asUint256(D256 memory self) internal pure returns (uint256) {\\n        return self.value.div(BASE);\\n    }\\n\\n    // ============ Core Methods ============\\n\\n    function getPartial(\\n        uint256 target,\\n        uint256 numerator,\\n        uint256 denominator\\n    ) private pure returns (uint256) {\\n        return target.mul(numerator).div(denominator);\\n    }\\n\\n    function compareTo(D256 memory a, D256 memory b)\\n        private\\n        pure\\n        returns (uint256)\\n    {\\n        if (a.value == b.value) {\\n            return 1;\\n        }\\n        return a.value > b.value ? 2 : 0;\\n    }\\n}\\n\",\"keccak256\":\"0xd932ca72bcd91535f972fca6940a92b5aef5f817e360934fe64ce6b498a9b7b7\"},\"src/oracle/IOracle.sol\":{\"content\":\"// SPDX-License-Identifier: GPL-3.0-or-later\\npragma solidity =0.8.13;\\n\\nimport \\\"../external/Decimal.sol\\\";\\n\\n/// @title generic oracle interface\\ninterface IOracle {\\n    // ----------- Events -----------\\n\\n    event Update(uint256 _peg);\\n\\n    // ----------- State changing API -----------\\n\\n    function update() external;\\n\\n    // ----------- Getters -----------\\n\\n    function read() external view returns (Decimal.D256 memory, bool);\\n\\n    function isOutdated() external view returns (bool);\\n}\\n\",\"keccak256\":\"0xdc7b8900d8ae3d3a8a9cb3d921bcdcd039ef434191b5a27eaecfd1a04b12f4b5\",\"license\":\"GPL-3.0-or-later\"},\"src/oracle/PriceOracle.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity =0.8.13;\\n\\nimport {OracleRef} from \\\"../refs/OracleRef.sol\\\";\\n\\ncontract PriceOracle is OracleRef {\\n    constructor(\\n        address _oracle,\\n        address _backupOracle,\\n        bool _isInvert\\n    ) OracleRef(_oracle, _backupOracle, 0, _isInvert) {}\\n}\\n\",\"keccak256\":\"0x69249f269ea92dc51e899655d67476c68b331cc47c304761a41d72ae049f3a62\",\"license\":\"MIT\"},\"src/refs/IOracleRef.sol\":{\"content\":\"// SPDX-License-Identifier: GPL-3.0-or-later\\npragma solidity =0.8.13;\\n\\nimport \\\"../oracle/IOracle.sol\\\";\\n\\n/// @title OracleRef interface\\ninterface IOracleRef {\\n    // ----------- Events -----------\\n\\n    event OracleUpdate(address indexed oldOracle, address indexed newOracle);\\n\\n    event InvertUpdate(bool oldDoInvert, bool newDoInvert);\\n\\n    event DecimalsNormalizerUpdate(\\n        int256 oldDecimalsNormalizer,\\n        int256 newDecimalsNormalizer\\n    );\\n\\n    event BackupOracleUpdate(\\n        address indexed oldBackupOracle,\\n        address indexed newBackupOracle\\n    );\\n\\n    // ----------- State changing API -----------\\n\\n    function updateOracle() external;\\n\\n    function setOracle(address newOracle) external;\\n\\n    function setBackupOracle(address newBackupOracle) external;\\n\\n    function setDecimalsNormalizer(int256 newDecimalsNormalizer) external;\\n\\n    function setDoInvert(bool newDoInvert) external;\\n\\n    // ----------- Getters -----------\\n\\n    function oracle() external view returns (IOracle);\\n\\n    function backupOracle() external view returns (IOracle);\\n\\n    function doInvert() external view returns (bool);\\n\\n    function decimalsNormalizer() external view returns (int256);\\n\\n    function readOracle() external view returns (Decimal.D256 memory);\\n\\n    function invert(Decimal.D256 calldata price)\\n        external\\n        pure\\n        returns (Decimal.D256 memory);\\n}\\n\",\"keccak256\":\"0xde65048addd2169093812fbada26f8f90b367fc557f8afb9be8a7294ed265389\",\"license\":\"GPL-3.0-or-later\"},\"src/refs/OracleRef.sol\":{\"content\":\"// SPDX-License-Identifier: GPL-3.0-or-later\\npragma solidity =0.8.13;\\n\\nimport {IOracleRef, IOracle, Decimal} from \\\"./IOracleRef.sol\\\";\\n\\nimport {Ownable} from \\\"@openzeppelin/contracts/access/Ownable.sol\\\";\\nimport {SafeCast} from \\\"@openzeppelin/contracts/utils/math/SafeCast.sol\\\";\\nimport \\\"@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol\\\";\\n\\n/// @title Reference to an Oracle\\n/// @notice defines some utilities around interacting with the referenced oracle\\nabstract contract OracleRef is IOracleRef, Ownable {\\n    using Decimal for Decimal.D256;\\n    using SafeCast for int256;\\n\\n    /// @notice the oracle reference by the contract\\n    IOracle public override oracle;\\n\\n    /// @notice the backup oracle reference by the contract\\n    IOracle public override backupOracle;\\n\\n    /// @notice number of decimals to scale oracle price by, i.e. multiplying by 10^(decimalsNormalizer)\\n    int256 public override decimalsNormalizer;\\n\\n    bool public override doInvert;\\n\\n    /// @notice OracleRef constructor\\n    /// @param _oracle oracle to reference\\n    /// @param _backupOracle backup oracle to reference\\n    /// @param _decimalsNormalizer number of decimals to normalize the oracle feed if necessary\\n    /// @param _doInvert invert the oracle price if this flag is on\\n    constructor(\\n        address _oracle,\\n        address _backupOracle,\\n        int256 _decimalsNormalizer,\\n        bool _doInvert\\n    ) {\\n        _setOracle(_oracle);\\n        if (_backupOracle != address(0) && _backupOracle != _oracle) {\\n            _setBackupOracle(_backupOracle);\\n        }\\n        _setDoInvert(_doInvert);\\n        _setDecimalsNormalizer(_decimalsNormalizer);\\n    }\\n\\n    /// @notice sets the referenced oracle\\n    /// @param newOracle the new oracle to reference\\n    function setOracle(address newOracle) external override onlyOwner {\\n        _setOracle(newOracle);\\n    }\\n\\n    /// @notice sets the flag for whether to invert or not\\n    /// @param newDoInvert the new flag for whether to invert\\n    function setDoInvert(bool newDoInvert) external override onlyOwner {\\n        _setDoInvert(newDoInvert);\\n    }\\n\\n    /// @notice sets the new decimalsNormalizer\\n    /// @param newDecimalsNormalizer the new decimalsNormalizer\\n    function setDecimalsNormalizer(int256 newDecimalsNormalizer)\\n        external\\n        override\\n        onlyOwner\\n    {\\n        _setDecimalsNormalizer(newDecimalsNormalizer);\\n    }\\n\\n    /// @notice sets the referenced backup oracle\\n    /// @param newBackupOracle the new backup oracle to reference\\n    function setBackupOracle(address newBackupOracle)\\n        external\\n        override\\n        onlyOwner\\n    {\\n        _setBackupOracle(newBackupOracle);\\n    }\\n\\n    /// @notice invert a peg price\\n    /// @param price the peg price to invert\\n    /// @return the inverted peg as a Decimal\\n    /// @dev the inverted peg would be X per Token\\n    function invert(Decimal.D256 memory price)\\n        public\\n        pure\\n        override\\n        returns (Decimal.D256 memory)\\n    {\\n        return Decimal.one().div(price);\\n    }\\n\\n    /// @notice updates the referenced oracle\\n    function updateOracle() public override {\\n        oracle.update();\\n    }\\n\\n    /// @notice the peg price of the referenced oracle\\n    /// @return the peg as a Decimal\\n    /// @dev the peg is defined as Pool token per X with X being ETH, dollars, etc\\n    function readOracle() public view override returns (Decimal.D256 memory) {\\n        (Decimal.D256 memory _peg, bool valid) = oracle.read();\\n        if (!valid && address(backupOracle) != address(0)) {\\n            (_peg, valid) = backupOracle.read();\\n        }\\n        require(valid, \\\"OracleRef: oracle invalid\\\");\\n\\n        // Scale the oracle price by token decimals delta if necessary\\n        uint256 scalingFactor;\\n        if (decimalsNormalizer < 0) {\\n            scalingFactor = 10**(-1 * decimalsNormalizer).toUint256();\\n            _peg = _peg.div(scalingFactor);\\n        } else {\\n            scalingFactor = 10**decimalsNormalizer.toUint256();\\n            _peg = _peg.mul(scalingFactor);\\n        }\\n\\n        // Invert the oracle price if necessary\\n        if (doInvert) {\\n            _peg = invert(_peg);\\n        }\\n        return _peg;\\n    }\\n\\n    function _setOracle(address newOracle) internal {\\n        require(newOracle != address(0), \\\"OracleRef: zero address\\\");\\n        address oldOracle = address(oracle);\\n        oracle = IOracle(newOracle);\\n        emit OracleUpdate(oldOracle, newOracle);\\n    }\\n\\n    // Supports zero address if no backup\\n    function _setBackupOracle(address newBackupOracle) internal {\\n        address oldBackupOracle = address(backupOracle);\\n        backupOracle = IOracle(newBackupOracle);\\n        emit BackupOracleUpdate(oldBackupOracle, newBackupOracle);\\n    }\\n\\n    function _setDoInvert(bool newDoInvert) internal {\\n        bool oldDoInvert = doInvert;\\n        doInvert = newDoInvert;\\n\\n        if (oldDoInvert != newDoInvert) {\\n            _setDecimalsNormalizer(-1 * decimalsNormalizer);\\n        }\\n\\n        emit InvertUpdate(oldDoInvert, newDoInvert);\\n    }\\n\\n    function _setDecimalsNormalizer(int256 newDecimalsNormalizer) internal {\\n        int256 oldDecimalsNormalizer = decimalsNormalizer;\\n        decimalsNormalizer = newDecimalsNormalizer;\\n        emit DecimalsNormalizerUpdate(\\n            oldDecimalsNormalizer,\\n            newDecimalsNormalizer\\n        );\\n    }\\n}\\n\",\"keccak256\":\"0xcea029ef2bc193e14295eab65339b769e403bb6f183f22d3155b97ac8ad6482b\",\"license\":\"GPL-3.0-or-later\"}},\"version\":1}",
+  "bytecode": "0x60806040523480156200001157600080fd5b50604051620010a7380380620010a78339810160408190526200003491620002d4565b82826000836200004433620000ae565b6200004f84620000fe565b6001600160a01b038316158015906200007a5750836001600160a01b0316836001600160a01b031614155b156200008b576200008b83620001ab565b6200009681620001fd565b620000a18262000278565b50505050505050620003cd565b600080546001600160a01b038381166001600160a01b0319831681178455604051919092169283917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e09190a35050565b6001600160a01b038116620001595760405162461bcd60e51b815260206004820152601760248201527f4f7261636c655265663a207a65726f2061646472657373000000000000000000604482015260640160405180910390fd5b600180546001600160a01b038381166001600160a01b0319831681179093556040519116919082907f93450534569bdbb3109b44eef77c9b236897f4caa4f201be10252d6462a5693790600090a35050565b600280546001600160a01b038381166001600160a01b0319831681179093556040519116919082907f492cc1f8400b642b4e56de46ed10d314a49bf3e0594c43e2e5947c1e1733645b90600090a35050565b6004805482151560ff198216811790925560ff1690811515146200023757620002376003546000196200023191906200033c565b62000278565b60408051821515815283151560208201527f16b9ae7ca814a6dfd3357b20f33bcc7c194676988d5da46846628da394df8ab391015b60405180910390a15050565b600380549082905560408051828152602081018490527fc45ec9015c033bb1ee553a67346dd851062dddce070a6dddb7616e5d7595bcc291016200026c565b80516001600160a01b0381168114620002cf57600080fd5b919050565b600080600060608486031215620002ea57600080fd5b620002f584620002b7565b92506200030560208501620002b7565b9150604084015180151581146200031b57600080fd5b809150509250925092565b634e487b7160e01b600052601160045260246000fd5b60006001600160ff1b038184138284138082168684048611161562000365576200036562000326565b600160ff1b600087128281168783058912161562000387576200038762000326565b60008712925087820587128484161615620003a657620003a662000326565b87850587128184161615620003bf57620003bf62000326565b505050929093029392505050565b610cca80620003dd6000396000f3fe608060405234801561001057600080fd5b50600436106100ea5760003560e01c80637adbf9731161008c5780638da5cb5b116100665780638da5cb5b146101c9578063d6f124f0146101da578063f2fde38b146101e2578063ff2ca34c146101f557600080fd5b80637adbf973146101785780637dc0d1d01461018b578063836efd31146101b657600080fd5b80635936b637116100c85780635936b637146101335780636e791c8314610146578063715018a61461015957806373ab1ddd1461016157600080fd5b806303bd9edd146100ef57806325498401146101045780633be8261b14610117575b600080fd5b6101026100fd36600461095f565b610212565b005b610102610112366004610978565b610251565b61011f610284565b604051905181526020015b60405180910390f35b6101026101413660046109af565b610466565b61011f6101543660046109cc565b610499565b6101026104d5565b61016a60035481565b60405190815260200161012a565b610102610186366004610978565b61050b565b60015461019e906001600160a01b031681565b6040516001600160a01b03909116815260200161012a565b60025461019e906001600160a01b031681565b6000546001600160a01b031661019e565b61010261053e565b6101026101f0366004610978565b6105a8565b6004546102029060ff1681565b604051901515815260200161012a565b6000546001600160a01b031633146102455760405162461bcd60e51b815260040161023c90610a1c565b60405180910390fd5b61024e81610640565b50565b6000546001600160a01b0316331461027b5760405162461bcd60e51b815260040161023c90610a1c565b61024e81610686565b604080516020810190915260008152600154604080516315f789a960e21b8152815160009384936001600160a01b03909116926357de26a492600480830193928290030181865afa1580156102dd573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906103019190610a51565b915091508015801561031d57506002546001600160a01b031615155b1561039357600254604080516315f789a960e21b815281516001600160a01b03909316926357de26a4926004808401939192918290030181865afa158015610369573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061038d9190610a51565b90925090505b806103e05760405162461bcd60e51b815260206004820152601960248201527f4f7261636c655265663a206f7261636c6520696e76616c696400000000000000604482015260640161023c565b6000806003541215610422576104046003546000196103ff9190610ade565b6106d8565b61040f90600a610c47565b905061041b838261072e565b9250610447565b61042d6003546106d8565b61043890600a610c47565b9050610444838261075f565b92505b60045460ff161561045e5761045b83610499565b92505b509092915050565b6000546001600160a01b031633146104905760405162461bcd60e51b815260040161023c90610a1c565b61024e81610787565b6040805160208082018352600080835283518083018552528251908101909252670de0b6b3a76400008252906104cf90836107f5565b92915050565b6000546001600160a01b031633146104ff5760405162461bcd60e51b815260040161023c90610a1c565b610509600061082a565b565b6000546001600160a01b031633146105355760405162461bcd60e51b815260040161023c90610a1c565b61024e8161087a565b600160009054906101000a90046001600160a01b03166001600160a01b031663a2e620456040518163ffffffff1660e01b8152600401600060405180830381600087803b15801561058e57600080fd5b505af11580156105a2573d6000803e3d6000fd5b50505050565b6000546001600160a01b031633146105d25760405162461bcd60e51b815260040161023c90610a1c565b6001600160a01b0381166106375760405162461bcd60e51b815260206004820152602660248201527f4f776e61626c653a206e6577206f776e657220697320746865207a65726f206160448201526564647265737360d01b606482015260840161023c565b61024e8161082a565b600380549082905560408051828152602081018490527fc45ec9015c033bb1ee553a67346dd851062dddce070a6dddb7616e5d7595bcc291015b60405180910390a15050565b600280546001600160a01b038381166001600160a01b0319831681179093556040519116919082907f492cc1f8400b642b4e56de46ed10d314a49bf3e0594c43e2e5947c1e1733645b90600090a35050565b60008082121561072a5760405162461bcd60e51b815260206004820181905260248201527f53616665436173743a2076616c7565206d75737420626520706f736974697665604482015260640161023c565b5090565b6040805160208101909152600081526040805160208101909152835181906107569085610922565b90529392505050565b6040805160208101909152600081526040805160208101909152835181906107569085610935565b6004805482151560ff198216811790925560ff1690811515146107bc576107bc6003546000196107b79190610ade565b610640565b60408051821515815283151560208201527f16b9ae7ca814a6dfd3357b20f33bcc7c194676988d5da46846628da394df8ab3910161067a565b60408051602081019091526000815260405180602001604052806107568560000151670de0b6b3a76400008660000151610941565b600080546001600160a01b038381166001600160a01b0319831681178455604051919092169283917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e09190a35050565b6001600160a01b0381166108d05760405162461bcd60e51b815260206004820152601760248201527f4f7261636c655265663a207a65726f2061646472657373000000000000000000604482015260640161023c565b600180546001600160a01b038381166001600160a01b0319831681179093556040519116919082907f93450534569bdbb3109b44eef77c9b236897f4caa4f201be10252d6462a5693790600090a35050565b600061092e8284610c53565b9392505050565b600061092e8284610c75565b6000610957826109518686610935565b90610922565b949350505050565b60006020828403121561097157600080fd5b5035919050565b60006020828403121561098a57600080fd5b81356001600160a01b038116811461092e57600080fd5b801515811461024e57600080fd5b6000602082840312156109c157600080fd5b813561092e816109a1565b6000602082840312156109de57600080fd5b6040516020810181811067ffffffffffffffff82111715610a0f57634e487b7160e01b600052604160045260246000fd5b6040529135825250919050565b6020808252818101527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604082015260600190565b6000808284036040811215610a6557600080fd5b6020811215610a7357600080fd5b506040516020810181811067ffffffffffffffff82111715610aa557634e487b7160e01b600052604160045260246000fd5b604052835181526020840151909250610abd816109a1565b809150509250929050565b634e487b7160e01b600052601160045260246000fd5b60006001600160ff1b0381841382841380821686840486111615610b0457610b04610ac8565b600160ff1b6000871282811687830589121615610b2357610b23610ac8565b60008712925087820587128484161615610b3f57610b3f610ac8565b87850587128184161615610b5557610b55610ac8565b505050929093029392505050565b600181815b80851115610b9e578160001904821115610b8457610b84610ac8565b80851615610b9157918102915b93841c9390800290610b68565b509250929050565b600082610bb5575060016104cf565b81610bc2575060006104cf565b8160018114610bd85760028114610be257610bfe565b60019150506104cf565b60ff841115610bf357610bf3610ac8565b50506001821b6104cf565b5060208310610133831016604e8410600b8410161715610c21575081810a6104cf565b610c2b8383610b63565b8060001904821115610c3f57610c3f610ac8565b029392505050565b600061092e8383610ba6565b600082610c7057634e487b7160e01b600052601260045260246000fd5b500490565b6000816000190483118215151615610c8f57610c8f610ac8565b50029056fea26469706673582212202df2482243406e7070d298e08d4b0831f74c3849d5439fe063c183d4e0ace92a64736f6c634300080d0033",
+  "deployedBytecode": "0x608060405234801561001057600080fd5b50600436106100ea5760003560e01c80637adbf9731161008c5780638da5cb5b116100665780638da5cb5b146101c9578063d6f124f0146101da578063f2fde38b146101e2578063ff2ca34c146101f557600080fd5b80637adbf973146101785780637dc0d1d01461018b578063836efd31146101b657600080fd5b80635936b637116100c85780635936b637146101335780636e791c8314610146578063715018a61461015957806373ab1ddd1461016157600080fd5b806303bd9edd146100ef57806325498401146101045780633be8261b14610117575b600080fd5b6101026100fd36600461095f565b610212565b005b610102610112366004610978565b610251565b61011f610284565b604051905181526020015b60405180910390f35b6101026101413660046109af565b610466565b61011f6101543660046109cc565b610499565b6101026104d5565b61016a60035481565b60405190815260200161012a565b610102610186366004610978565b61050b565b60015461019e906001600160a01b031681565b6040516001600160a01b03909116815260200161012a565b60025461019e906001600160a01b031681565b6000546001600160a01b031661019e565b61010261053e565b6101026101f0366004610978565b6105a8565b6004546102029060ff1681565b604051901515815260200161012a565b6000546001600160a01b031633146102455760405162461bcd60e51b815260040161023c90610a1c565b60405180910390fd5b61024e81610640565b50565b6000546001600160a01b0316331461027b5760405162461bcd60e51b815260040161023c90610a1c565b61024e81610686565b604080516020810190915260008152600154604080516315f789a960e21b8152815160009384936001600160a01b03909116926357de26a492600480830193928290030181865afa1580156102dd573d6000803e3d6000fd5b505050506040513d601f19601f820116820180604052508101906103019190610a51565b915091508015801561031d57506002546001600160a01b031615155b1561039357600254604080516315f789a960e21b815281516001600160a01b03909316926357de26a4926004808401939192918290030181865afa158015610369573d6000803e3d6000fd5b505050506040513d601f19601f8201168201806040525081019061038d9190610a51565b90925090505b806103e05760405162461bcd60e51b815260206004820152601960248201527f4f7261636c655265663a206f7261636c6520696e76616c696400000000000000604482015260640161023c565b6000806003541215610422576104046003546000196103ff9190610ade565b6106d8565b61040f90600a610c47565b905061041b838261072e565b9250610447565b61042d6003546106d8565b61043890600a610c47565b9050610444838261075f565b92505b60045460ff161561045e5761045b83610499565b92505b509092915050565b6000546001600160a01b031633146104905760405162461bcd60e51b815260040161023c90610a1c565b61024e81610787565b6040805160208082018352600080835283518083018552528251908101909252670de0b6b3a76400008252906104cf90836107f5565b92915050565b6000546001600160a01b031633146104ff5760405162461bcd60e51b815260040161023c90610a1c565b610509600061082a565b565b6000546001600160a01b031633146105355760405162461bcd60e51b815260040161023c90610a1c565b61024e8161087a565b600160009054906101000a90046001600160a01b03166001600160a01b031663a2e620456040518163ffffffff1660e01b8152600401600060405180830381600087803b15801561058e57600080fd5b505af11580156105a2573d6000803e3d6000fd5b50505050565b6000546001600160a01b031633146105d25760405162461bcd60e51b815260040161023c90610a1c565b6001600160a01b0381166106375760405162461bcd60e51b815260206004820152602660248201527f4f776e61626c653a206e6577206f776e657220697320746865207a65726f206160448201526564647265737360d01b606482015260840161023c565b61024e8161082a565b600380549082905560408051828152602081018490527fc45ec9015c033bb1ee553a67346dd851062dddce070a6dddb7616e5d7595bcc291015b60405180910390a15050565b600280546001600160a01b038381166001600160a01b0319831681179093556040519116919082907f492cc1f8400b642b4e56de46ed10d314a49bf3e0594c43e2e5947c1e1733645b90600090a35050565b60008082121561072a5760405162461bcd60e51b815260206004820181905260248201527f53616665436173743a2076616c7565206d75737420626520706f736974697665604482015260640161023c565b5090565b6040805160208101909152600081526040805160208101909152835181906107569085610922565b90529392505050565b6040805160208101909152600081526040805160208101909152835181906107569085610935565b6004805482151560ff198216811790925560ff1690811515146107bc576107bc6003546000196107b79190610ade565b610640565b60408051821515815283151560208201527f16b9ae7ca814a6dfd3357b20f33bcc7c194676988d5da46846628da394df8ab3910161067a565b60408051602081019091526000815260405180602001604052806107568560000151670de0b6b3a76400008660000151610941565b600080546001600160a01b038381166001600160a01b0319831681178455604051919092169283917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e09190a35050565b6001600160a01b0381166108d05760405162461bcd60e51b815260206004820152601760248201527f4f7261636c655265663a207a65726f2061646472657373000000000000000000604482015260640161023c565b600180546001600160a01b038381166001600160a01b0319831681179093556040519116919082907f93450534569bdbb3109b44eef77c9b236897f4caa4f201be10252d6462a5693790600090a35050565b600061092e8284610c53565b9392505050565b600061092e8284610c75565b6000610957826109518686610935565b90610922565b949350505050565b60006020828403121561097157600080fd5b5035919050565b60006020828403121561098a57600080fd5b81356001600160a01b038116811461092e57600080fd5b801515811461024e57600080fd5b6000602082840312156109c157600080fd5b813561092e816109a1565b6000602082840312156109de57600080fd5b6040516020810181811067ffffffffffffffff82111715610a0f57634e487b7160e01b600052604160045260246000fd5b6040529135825250919050565b6020808252818101527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604082015260600190565b6000808284036040811215610a6557600080fd5b6020811215610a7357600080fd5b506040516020810181811067ffffffffffffffff82111715610aa557634e487b7160e01b600052604160045260246000fd5b604052835181526020840151909250610abd816109a1565b809150509250929050565b634e487b7160e01b600052601160045260246000fd5b60006001600160ff1b0381841382841380821686840486111615610b0457610b04610ac8565b600160ff1b6000871282811687830589121615610b2357610b23610ac8565b60008712925087820587128484161615610b3f57610b3f610ac8565b87850587128184161615610b5557610b55610ac8565b505050929093029392505050565b600181815b80851115610b9e578160001904821115610b8457610b84610ac8565b80851615610b9157918102915b93841c9390800290610b68565b509250929050565b600082610bb5575060016104cf565b81610bc2575060006104cf565b8160018114610bd85760028114610be257610bfe565b60019150506104cf565b60ff841115610bf357610bf3610ac8565b50506001821b6104cf565b5060208310610133831016604e8410600b8410161715610c21575081810a6104cf565b610c2b8383610b63565b8060001904821115610c3f57610c3f610ac8565b029392505050565b600061092e8383610ba6565b600082610c7057634e487b7160e01b600052601260045260246000fd5b500490565b6000816000190483118215151615610c8f57610c8f610ac8565b50029056fea26469706673582212202df2482243406e7070d298e08d4b0831f74c3849d5439fe063c183d4e0ace92a64736f6c634300080d0033",
+  "devdoc": {
+    "kind": "dev",
+    "methods": {
+      "invert((uint256))": {
+        "details": "the inverted peg would be X per Token",
+        "params": {
+          "price": "the peg price to invert"
+        },
+        "returns": {
+          "_0": "the inverted peg as a Decimal"
+        }
+      },
+      "owner()": {
+        "details": "Returns the address of the current owner."
+      },
+      "readOracle()": {
+        "details": "the peg is defined as Pool token per X with X being ETH, dollars, etc",
+        "returns": {
+          "_0": "the peg as a Decimal"
+        }
+      },
+      "renounceOwnership()": {
+        "details": "Leaves the contract without owner. It will not be possible to call `onlyOwner` functions anymore. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby removing any functionality that is only available to the owner."
+      },
+      "setBackupOracle(address)": {
+        "params": {
+          "newBackupOracle": "the new backup oracle to reference"
+        }
+      },
+      "setDecimalsNormalizer(int256)": {
+        "params": {
+          "newDecimalsNormalizer": "the new decimalsNormalizer"
+        }
+      },
+      "setDoInvert(bool)": {
+        "params": {
+          "newDoInvert": "the new flag for whether to invert"
+        }
+      },
+      "setOracle(address)": {
+        "params": {
+          "newOracle": "the new oracle to reference"
+        }
+      },
+      "transferOwnership(address)": {
+        "details": "Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner."
+      }
+    },
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {
+      "backupOracle()": {
+        "notice": "the backup oracle reference by the contract"
+      },
+      "decimalsNormalizer()": {
+        "notice": "number of decimals to scale oracle price by, i.e. multiplying by 10^(decimalsNormalizer)"
+      },
+      "invert((uint256))": {
+        "notice": "invert a peg price"
+      },
+      "oracle()": {
+        "notice": "the oracle reference by the contract"
+      },
+      "readOracle()": {
+        "notice": "the peg price of the referenced oracle"
+      },
+      "setBackupOracle(address)": {
+        "notice": "sets the referenced backup oracle"
+      },
+      "setDecimalsNormalizer(int256)": {
+        "notice": "sets the new decimalsNormalizer"
+      },
+      "setDoInvert(bool)": {
+        "notice": "sets the flag for whether to invert or not"
+      },
+      "setOracle(address)": {
+        "notice": "sets the referenced oracle"
+      },
+      "updateOracle()": {
+        "notice": "updates the referenced oracle"
+      }
+    },
+    "version": 1
+  },
+  "storageLayout": {
+    "storage": [
+      {
+        "astId": 53,
+        "contract": "src/oracle/PriceOracle.sol:PriceOracle",
+        "label": "_owner",
+        "offset": 0,
+        "slot": "0",
+        "type": "t_address"
+      },
+      {
+        "astId": 5792,
+        "contract": "src/oracle/PriceOracle.sol:PriceOracle",
+        "label": "oracle",
+        "offset": 0,
+        "slot": "1",
+        "type": "t_contract(IOracle)5652"
+      },
+      {
+        "astId": 5797,
+        "contract": "src/oracle/PriceOracle.sol:PriceOracle",
+        "label": "backupOracle",
+        "offset": 0,
+        "slot": "2",
+        "type": "t_contract(IOracle)5652"
+      },
+      {
+        "astId": 5801,
+        "contract": "src/oracle/PriceOracle.sol:PriceOracle",
+        "label": "decimalsNormalizer",
+        "offset": 0,
+        "slot": "3",
+        "type": "t_int256"
+      },
+      {
+        "astId": 5804,
+        "contract": "src/oracle/PriceOracle.sol:PriceOracle",
+        "label": "doInvert",
+        "offset": 0,
+        "slot": "4",
+        "type": "t_bool"
+      }
+    ],
+    "types": {
+      "t_address": {
+        "encoding": "inplace",
+        "label": "address",
+        "numberOfBytes": "20"
+      },
+      "t_bool": {
+        "encoding": "inplace",
+        "label": "bool",
+        "numberOfBytes": "1"
+      },
+      "t_contract(IOracle)5652": {
+        "encoding": "inplace",
+        "label": "contract IOracle",
+        "numberOfBytes": "20"
+      },
+      "t_int256": {
+        "encoding": "inplace",
+        "label": "int256",
+        "numberOfBytes": "32"
+      }
+    }
+  }
+}
