@@ -80,7 +80,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
             log(chalk.yellow( `Argument: ${i} - value: ${OracleArgs[i]}`));
         }
 
-        if(hre.network.tags.production || hre.network.tags.staging){
+        if( network.name != 'hardhat' && ( hre.network.tags.production || hre.network.tags.staging)){
 
             try {
                 

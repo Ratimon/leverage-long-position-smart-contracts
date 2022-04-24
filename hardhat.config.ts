@@ -229,6 +229,7 @@ const config: HardhatUserConfig = {
     staging: {
       url: node_url('rinkeby'),
       accounts: accounts('rinkeby'),
+      tags: ['staging']
     },
     production: {
       url: node_url('mainnet'),
@@ -237,10 +238,12 @@ const config: HardhatUserConfig = {
     mainnet: {
       url: node_url('mainnet'),
       accounts: accounts('mainnet'),
+      tags: ['production']
     },
     rinkeby: {
       url: node_url('rinkeby'),
       accounts: accounts('rinkeby'),
+      tags: ['staging']
     },
     kovan: {
       url: node_url('kovan'),

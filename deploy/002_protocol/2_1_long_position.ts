@@ -95,7 +95,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
           }
 
 
-        if(hre.network.tags.production || hre.network.tags.staging){
+        if( network.name != 'hardhat' && ( hre.network.tags.production || hre.network.tags.staging)){
 
             try {
                     
