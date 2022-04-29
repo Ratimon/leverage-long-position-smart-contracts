@@ -86,14 +86,14 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
         const isForking = process.env.HARDHAT_FORK == undefined ? false: true
 
-        if(!isForking) {
-            const initCodePairHash = await read(
-                'FactoryUniswap',
-                'INIT_CODE_PAIR_HASH'
-            )
+        // if(!isForking) {
+        //     const initCodePairHash = await read(
+        //         'FactoryUniswap',
+        //         'INIT_CODE_PAIR_HASH'
+        //     )
 
-            log(`We ${chalk.red(`need to`)} modify initial code hash in ${chalk.yellow(`function pairFor of UniswapV2Library.sol`)} to be the same as :initCodePairHash:`,chalk.green(initCodePairHash));
-        } 
+        //     log(`We ${chalk.red(`need to`)} modify initial code hash in ${chalk.yellow(`function pairFor of UniswapV2Library.sol`)} to be the same as :initCodePairHash:`,chalk.green(initCodePairHash));
+        // } 
 
     }
 
