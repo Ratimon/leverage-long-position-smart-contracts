@@ -56,7 +56,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
     const LibraryResult = await deploy("UniswapV2Library", {
         // contract: `contracts/${libraryPath}`,
-        contract: `contracts/amm/libraries/UniswapV2Library.sol:UniswapV2Library`,
+        contract: `src/amm/libraries/UniswapV2Library.sol:UniswapV2Library`,
         from: deployer,
     });
 

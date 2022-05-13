@@ -98,7 +98,7 @@ describe('LongPosition: openPosition', function () {
     let options = {value: parseEther("1.0")}
     await (users[0].LongETHPosition as LongPosition).openPosition(options);
 
-    const  isPoitionActive =  await LongETHPosition.isCurrentPositionActive();
+    const  isPoitionActive =  await LongETHPosition.isCurrentPositionActive()
     expect(isPoitionActive).to.equal(true);
 
     const  currentPositionOwner =  await LongETHPosition.getCurrentPositionOwner();
